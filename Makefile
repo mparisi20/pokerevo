@@ -71,7 +71,7 @@ PYTHON      := python3
 POSTPROC := tools/postprocess/postprocess.py
 
 # Options
-INCLUDES := -i . -I- -i include -i include/SDK -i include/libstdc++
+INCLUDES := -i . -I- -i include -i include/SDK -i include/libstdc++ -i include/nw4r
 
 ASFLAGS := -mgekko -I include
 LDFLAGS := -map $(MAP) -fp hard -nodefaults

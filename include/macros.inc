@@ -88,6 +88,15 @@ Entry Point: 0x80006124
 .set qr5, 5
 .set qr6, 6
 .set qr7, 7
+.set GQR0, 0x390
+.set GQR1, 0x391
+.set GQR2, 0x392
+.set GQR3, 0x393
+.set GQR4, 0x394
+.set GQR5, 0x395
+.set GQR6, 0x396
+.set GQR7, 0x397
+.set HID2, 0x398
 # Small Data Area (read/write) Base
 .set _SDA_BASE_, 0x806452C0
 # Small Data Area (read only) Base
