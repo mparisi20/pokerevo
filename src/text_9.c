@@ -10,15 +10,47 @@ typedef struct unkStruct
     u8 unk0;
     u8 unk1;
     u8 padding[2];
-    u8 unk4[1000]; // not sure what size is
+    u8 unk4[1000]; // TODO: deduce size from func_80300C10 code
 } unkStruct;
 
+void func_80300C10(unkStruct *p1, const u8 *p2, u32 p3);
 void func_80300E68(unkStruct *p1, u8 *dest, const u8 *src, u32 n);
+
+void func_80300C10(unkStruct *p1, const u8 *p2, u32 p3)
+{
+    if (p3 > 0x10)
+        p3 = 0x10;
+    
+    p1->unk0 = 0;
+    u8 *r12 = p1->unk4;
+    p1->unk1 = 0;
+    for (u32 i = 0; i != 256; i++) {// TODO: change 8 to ...
+        r12[i] = (u8)i;
+    }
+    
+    p3 = (u8)p3;
+    u8 *r3 = r12;
+    u8 r9 = 0;
+    u8 r8 = 0;
+    u8 r7 = 0;
+    for (u32 i = 0; i < 256; i++) {
+        u8 r6 = r8++;
+        u8 r0 = r8;
+        u8 r10 = r3[i];
+        r6 = p2[r6];
+        r9 = (u8)(r9 + r10 + r6);
+        if (r0 == p3)
+            r8 = 0; // reset
+        r3[i] = r12[r9];
+        r12[r9] = r10;
+    }    
+}
 
 void func_80300E68(unkStruct *p1, u8 *dest, const u8 *src, u32 n)
 {
     u8 r7, r9, r10, r11, r12;
     u8 *r31;
+
     if (n == 0)
         return;
     r11 = p1->unk0;

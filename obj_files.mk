@@ -350,7 +350,6 @@ TEXT_O_FILES := 						                          \
 	$(BUILD_DIR)/asm/SDK/NHTTP/d_nhttp_common.o                                     \
 	$(BUILD_DIR)/asm/SDK/SSL/ssl_api.o                                     \
 	$(BUILD_DIR)/asm/SDK/SSL/ssl_mutex.o                                     \
-	$(BUILD_DIR)/asm/text_9_asm.o                                     \
 	$(BUILD_DIR)/src/text_9.o                                     \
 	$(BUILD_DIR)/asm/SDK/NWC24/NWC24StdAPI.o                                     \
 	$(BUILD_DIR)/asm/SDK/NWC24/NWC24FileAPI.o                                     \
