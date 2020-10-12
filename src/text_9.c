@@ -5,27 +5,35 @@ func_80300E68 17C
 
 #include "types.h"
 
-void func_80300E68(unkStruct *p1, unsigned char *dest, const unsigned char *src, u32 n)
+typedef struct unkStruct
 {
-	if (n == 0)
-		return;
-	unsigned char r11 = p1->unk0;
-	unsigned char r12 = p1->unk1;
-	unsigned char *r31 = &p1->unk4; // some kind of base pointer
-	// unrolled loops: one loop for each group of 4, 2nd loop for the remainder
-	if (n) {
-		// swap two bytes in the r31 array, and write
-		// a byte into the dest array
-		for (u32 i = n; i != 0; i--) {
-			r7 = *src++;
-			r9 = r31[++r11];
-			r12 += r9;
-			r10 = r31[r12];
-			r31[r12] = r9;
-			r31[r11] = r10;
-			*dest++ = r31[r9 + r10] ^ r7;
-		}
-	}
-	p1->unk0 = r11;
-	p1->unk1 = r12;
+    u8 unk0;
+    u8 unk1;
+    u8 padding[2];
+    u8 unk4[1000]; // not sure what size is
+} unkStruct;
+
+void func_80300E68(unkStruct *p1, u8 *dest, const u8 *src, u32 n);
+
+void func_80300E68(unkStruct *p1, u8 *dest, const u8 *src, u32 n)
+{
+    u8 r7, r9, r10, r11, r12;
+    u8 *r31;
+    if (n == 0)
+        return;
+    r11 = p1->unk0;
+    r31 = p1->unk4;
+    r12 = p1->unk1;
+    for (u32 i = n; i != 0; i--) {
+        r11 = (u8)(r11 + 1);
+        r7 = *src++;
+        r9 = r31[r11];
+        r12 = (u8)(r12 + r9);
+        r10 = r31[r12];
+        r31[r12] = r9;
+        r31[r11] = r10;
+        *dest++ = (u8)(r31[(u8)(r9 + r10)] ^ r7);
+    }
+    p1->unk0 = r11;
+    p1->unk1 = r12;
 }
