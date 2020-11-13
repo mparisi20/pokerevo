@@ -21,7 +21,7 @@ struct gUnkClass14
 {
     u8 unk0[0xC]; // pad
     
-    gUnkClass14();
+    gUnkClass14(); // 8002A294
 };
     
 
@@ -101,7 +101,6 @@ GSvolume::GSvolume(void* p1, gUnkClass10_2* p2) : GSnull(p1, p2)
     unk138 = &unkD0;
     
     if (p2->unk30 & 0x2) {
-        // TODO: need to call __construct_new_array
         if (p2->unk32 != 0) {
             unk13C = new gUnkClass14[p2->unk32];
             memcpy(unk13C, p2->unk38, p2->unk32 * sizeof(gUnkClass14));
@@ -129,6 +128,22 @@ GSvolume::GSvolume(void* p1, gUnkClass10_2* p2) : GSnull(p1, p2)
     func_801FA4A0(this);
     PPCSync();
 }
+
+void func_801FA5DC(GSvolume*);
+
+
+// TODO: label GSnull's virtual methods with mangled names
+GSvolume::~GSvolume()
+{
+    func_801FA5DC(this);
+    if (unk144) {
+        if (unk140 && unk140 != unk144->unk3C)
+            delete[] unk140;
+        if (unk13C && unk13C != unk144->unk38)
+            delete[] unk13C;
+    }
+}
+
 
 }
 
