@@ -16,12 +16,16 @@ struct gUnkClass11
 
 struct gUnkClass10
 {
-    u8 unk0[0x20]; // pad
+    u8 unk0[0x4]; // pad
+};
+
+struct gUnkClass10_1 : public gUnkClass10
+{
+    u8 unk4[0x1C]; // pad
     gUnkClass8* unk20;
     
-    u8 unk24[0xC]; // pad
-    
-    u32 unk30;
+    u8 unk24[0xC]; // pad    
+    u32 unk30; // NOTE: accessed as word in 801DED3C, but as halfword in 801DF040
     float unk34;
     float unk38;
     Vec unk3C;
@@ -34,8 +38,7 @@ protected:
     u16 unk10;
     u8 unk12[0xBE];
     Mtx unkD0;
-public:    
-    
+public:
     GSnull(u8 p1); // 801F1AE8
     GSnull(void* p1, gUnkClass10* p2); // 801F1BC8 // TODO: p1 type
     virtual ~GSnull();    // 801F1F24

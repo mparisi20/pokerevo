@@ -74,7 +74,7 @@ GScamera::GScamera() : GSnull(4)
     MTXIdentity(unk234);
 }
 
-GScamera::GScamera(void* p1, gUnkClass10* p2) : GSnull(p1, p2)
+GScamera::GScamera(void* p1, gUnkClass10_1* p2) : GSnull(p1, p2)
 {
     float f2;
     float f3;
@@ -383,7 +383,7 @@ void func_801DEA3C(Mtx p1, GScamera* p2, Mtx p3, BOOL p4)
     Vec sp24;
     Vec sp18 = { InlineFunc1(p3, 0), InlineFunc1(p3, 1), InlineFunc1(p3, 2) };
     Quaternion sp8;
-
+    
     MTXScale(sp70, sp18.x, sp18.y, sp18.z);
     
     float f0, f1, f2;

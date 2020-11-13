@@ -7,7 +7,7 @@
 class GScamera : public GSnull
 {
     u32 unk104; // flags
-    gUnkClass10* unk108;
+    gUnkClass10_1* unk108;
     Mtx44 unk10C; // orthographic projection matrix. TODO: this could be a C++ wrapper for Mtx44
     
     // TODO: Is unk14C~unk164 an array of floats initialized to 0s with an initializer list?
@@ -48,7 +48,7 @@ class GScamera : public GSnull
     Mtx unk234; // inverse-transpose of the viewing matrix
 public:
     GScamera(); // 801DDF78
-    GScamera(void* p1, gUnkClass10* p2); // 801DE084
+    GScamera(void* p1, gUnkClass10_1* p2); // 801DE084
     void func_801DE1F8();
     void func_801DE524();
     friend void func_801DEA3C(Mtx p1, GScamera* p2, Mtx p3, BOOL p4);

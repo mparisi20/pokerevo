@@ -163,9 +163,9 @@ lbl_8021D614:
 /* 8021D664 002192C4  1C 7E 00 0C */	mulli r3, r30, 0xc
 /* 8021D668 002192C8  38 63 00 10 */	addi r3, r3, 0x10
 /* 8021D66C 002192CC  4B FB D4 09 */	bl __nwa__FUl
-/* 8021D670 002192D0  3C 80 80 03 */	lis r4, func_8002A294@ha
+/* 8021D670 002192D0  3C 80 80 03 */	lis r4, __ct__11gUnkClass14Fv@ha
 /* 8021D674 002192D4  7F C7 F3 78 */	mr r7, r30
-/* 8021D678 002192D8  38 84 A2 94 */	addi r4, r4, func_8002A294@l
+/* 8021D678 002192D8  38 84 A2 94 */	addi r4, r4, __ct__11gUnkClass14Fv@l
 /* 8021D67C 002192DC  38 A0 00 00 */	li r5, 0
 /* 8021D680 002192E0  38 C0 00 0C */	li r6, 0xc
 /* 8021D684 002192E4  4B FA 96 25 */	bl __construct_new_array
