@@ -2,6 +2,7 @@
 
 .section .text, "ax"  # 0x80006980 - 0x803E1E60
 
+# eftseq::AnimNode<float> ctor
 .global func_80050324
 func_80050324:
 /* 80050324 0004BF84  3C 80 80 41 */	lis r4, lbl_8040AC88@ha
@@ -148,6 +149,7 @@ lbl_80050500:
 /* 80050524 0004C184  38 60 00 01 */	li r3, 1
 /* 80050528 0004C188  4E 80 00 20 */	blr
 
+# eftseq::AnimNode<GSvec> ctor
 .global func_8005052C
 func_8005052C:
 /* 8005052C 0004C18C  3C 80 80 41 */	lis r4, lbl_8040AC00@ha
@@ -342,6 +344,7 @@ lbl_800507D4:
 /* 800507E8 0004C448  38 21 00 30 */	addi r1, r1, 0x30
 /* 800507EC 0004C44C  4E 80 00 20 */	blr
 
+# AnimNode<GScolor<u8>> ctor
 .global func_800507F0
 func_800507F0:
 /* 800507F0 0004C450  3C 80 80 41 */	lis r4, lbl_8040ABC8@ha
@@ -566,6 +569,7 @@ lbl_80050B2C:
 /* 80050B2C 0004C78C  38 21 00 40 */	addi r1, r1, 0x40
 /* 80050B30 0004C790  4E 80 00 20 */	blr
 
+# eftseq::AnimNode<GScolor<float>> ctor
 .global func_80050B34
 func_80050B34:
 /* 80050B34 0004C794  3C 80 80 41 */	lis r4, lbl_8040AB98@ha
