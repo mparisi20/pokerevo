@@ -14,6 +14,7 @@ struct gUnkClass11
     Vec unk18;
 };
 
+// TODO: inferred base class. Unknown size
 struct gUnkClass10
 {
     u8 unk0[0x4]; // pad

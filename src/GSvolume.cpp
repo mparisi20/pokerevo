@@ -4,6 +4,12 @@
 
 namespace
 {
+    struct unkClass
+    {
+        u16 unk0;
+        u16 unk2;
+    };
+    
     // NOTE: could just be an array of float
     struct unkClass2
     {
@@ -24,6 +30,8 @@ namespace
         Mtx* unk14;
     };
     ///////////////
+    
+    
 }
 
 // size == 0xC
@@ -43,10 +51,15 @@ struct gUnkClass10_2 : public gUnkClass10
     u16 unk34;
     gUnkClass14* unk38;
     gUnkClass14* unk3C;
+    u8 unk40[0x8]; // pad
     
-    u8 unk40[0x28]; // pad
+    u16 unk48;
+    unkClass* unk4C;
+    
+    u8 unk4A[0x1E]; // pad
     
     unkClass2* unk68;
+    
 };
 
 class GSvolume : public GSnull
@@ -71,7 +84,7 @@ class GSvolume : public GSnull
 public:
     GSvolume(void* p1, gUnkClass10_2* p2); // 801DF040
     void func_801DF2CC();
-    void func_801DF3F8(Mtx p2, Mtx p3, u32 p4, u32 p5, Vec* p6, Vec* p7);
+    void func_801DF3F8(const Mtx p2, const Mtx p3, u32 p4, u32 p5, Vec* p6, const Vec* p7) const;
     virtual ~GSvolume(); // 801DF204
 };
 
@@ -279,9 +292,8 @@ lbl_801DF390:
 void PSVECScale(const Vec* src, Vec* dst, float scale);
 #define VECScale PSVECScale
 
-
 // static
-void GSvolume::func_801DF3F8(Mtx p2, Mtx p3, u32 p4, u32 p5, Vec* p6, Vec* p7)
+void GSvolume::func_801DF3F8(const Mtx p2, const Mtx p3, u32 p4, u32 p5, Vec* p6, const Vec* p7) const
 {
     Vec sp2C;
     Vec sp20;
@@ -301,49 +313,54 @@ void GSvolume::func_801DF3F8(Mtx p2, Mtx p3, u32 p4, u32 p5, Vec* p6, Vec* p7)
     VECAdd(p6, &sp8, p6);
 }
 
+// TODO: implement the rest of OSSetGQR[n], and move to OS header
+
+#define OS_GQR_SCALE_65536 16
+#define OS_GQR_U16 5
+
+struct gUnkClass16
+{
+    u8 unk0[0x8]; //pad
+    void* unk8; // TOOD: ptr to another class
+    u8 unkC[0xD2]; //pad
+    u16 unkDE;
+};
+
+struct gUnkClass15
+{
+    u8 unk0[0xB8]; // pad
+    gUnkClass16* unkB8;
+};
 
 
+inline void OSSetGQR3(u32 type, u32 scale)
+{
+    register u32 val = ((scale << 8 | type) << 16) | (scale << 8 | type);
+    asm { mtspr GQR3, val }
+}
+
+#if 0
+
+void GSvolume::func_801DF528()
+{
+    gUnkClass10_2* r4 = unk144;
+    if (unk13C != r4->unk38) {
+        OSSetGQR3(OS_GQR_U16, OS_GQR_SCALE_65536);
+        u16 r26 = r4->unk48;
+        unkClass* r30 = r4->unk4C;
+        while (r26--) {
+            unkB8
+        }
+        
+    }
+    
+    
+    
 }
 
 
+#endif
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
