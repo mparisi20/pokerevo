@@ -39,13 +39,13 @@ class GScamera : public GSnull
     Vec unk188;
     Vec unk194;
     Vec unk1A0;
-    Point3d unk1AC; // camera position
-    Vec unk1B8; // camera up vector
-    Point3d unk1C4; // target posiiton
+    Point3d camPos; // camera position
+    Vec camUp; // camera up vector
+    Point3d targetPos; // target posiiton
     GScamera* unk1D0;
-    Mtx unk1D4; // viewing matrix
-    Mtx unk204; // inverse of the viewing matrix
-    Mtx unk234; // inverse-transpose of the viewing matrix
+    Mtx modelview; // modelview matrix
+    Mtx unk204; // inverse of the modelview matrix
+    Mtx unk234; // inverse-transpose of the modelview matrix
 public:
     GScamera(); // 801DDF78
     GScamera(void* p1, gUnkClass10* p2); // 801DE084

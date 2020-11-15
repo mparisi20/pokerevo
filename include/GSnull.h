@@ -14,6 +14,7 @@ struct gUnkClass11
     Vec unk18;
 };
 
+// contructor is func_801F461C from code_801F40E0
 struct gUnkClass10
 {
     u8 unk0[0x20]; // pad
@@ -34,8 +35,7 @@ protected:
     u16 unk10;
     u8 unk12[0xBE];
     Mtx unkD0;
-public:    
-    
+public:
     GSnull(u8 p1); // 801F1AE8
     GSnull(void* p1, gUnkClass10* p2); // 801F1BC8 // TODO: p1 type
     virtual ~GSnull();    // 801F1F24

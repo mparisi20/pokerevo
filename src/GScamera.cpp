@@ -10,9 +10,18 @@
 static ctorStruct gUnk8063F358(1, 4, 0);
 
 // TODO: determine defining modules for these external references
-extern Vec lbl_80493614;
-extern Vec lbl_80493620;
+
+extern "C"
+{
+
+// 80493614
+extern Vec GSjHat; // TODO: initialized to {0, 1, 0} in code_80223A0C's sinit
+// 80493620
+extern Vec GSkHat; // TODO: initialized to {0, 0, 1} in code_80223A0C's sinit
+
 extern Mtx lbl_804932E0;
+
+}
 
 GScamera::GScamera() : GSnull(4)
 {
@@ -56,20 +65,20 @@ GScamera::GScamera() : GSnull(4)
     unk1A0.x = 0.0f;
     unk1A0.y = 0.0f;
     unk1A0.z = 0.0f;
-    unk1AC.x = 0.0f;
-    unk1AC.y = 0.0f;
-    unk1AC.z = -1.0f;
-    unk1B8.x = 0.0f;
-    unk1B8.y = f5;
-    unk1B8.z = 0.0f;
-    unk1C4.x = 0.0f;
-    unk1C4.y = 0.0f;
-    unk1C4.z = 0.0f;
+    camPos.x = 0.0f;
+    camPos.y = 0.0f;
+    camPos.z = -1.0f;
+    camUp.x = 0.0f;
+    camUp.y = f5;
+    camUp.z = 0.0f;
+    targetPos.x = 0.0f;
+    targetPos.y = 0.0f;
+    targetPos.z = 0.0f;
     unk1D0 = NULL;
     
     unk17C.z = f2;
     
-    MTXIdentity(unk1D4);
+    MTXIdentity(modelview);
     MTXIdentity(unk204);
     MTXIdentity(unk234);
 }
@@ -117,21 +126,21 @@ GScamera::GScamera(void* p1, gUnkClass10* p2) : GSnull(p1, p2)
     unk1A0.x = 0.0f;
     unk1A0.y = 0.0f;
     unk1A0.z = 0.0f;
-    unk1AC.x = 0.0f;
-    unk1AC.y = 0.0f;
-    unk1AC.z = 0.0f;
-    unk1B8.x = 0.0f;
-    unk1B8.y = f5;
-    unk1B8.z = 0.0f;
-    unk1C4.x = 0.0f;
-    unk1C4.y = 0.0f;
-    unk1C4.z = -1.0f;
+    camPos.x = 0.0f;
+    camPos.y = 0.0f;
+    camPos.z = 0.0f;
+    camUp.x = 0.0f;
+    camUp.y = f5;
+    camUp.z = 0.0f;
+    targetPos.x = 0.0f;
+    targetPos.y = 0.0f;
+    targetPos.z = -1.0f;
     unk1D0 = NULL;
     
     unk16C = f6;
     unk17C.z = f2;
 
-    MTXIdentity(unk1D4);
+    MTXIdentity(modelview);
     MTXIdentity(unk204);
     MTXIdentity(unk234);
 }
@@ -221,24 +230,50 @@ void GScamera::func_801DE1F8()
     }
 }
 
+// if state flag 4 is set, 
+// make camUp orthogonal to the displacement between the target and camera
+// then clear flag 4 and set flag 5
 void GScamera::func_801DE524()
 {
-    Vec sp38;
-    Vec sp2C;
-    Vec sp20;
-    Vec sp14;
-    Vec sp8;
+    Vec unitDisp;
+    Vec unitCross;
+    Vec disp;
+    Vec cross;
+    Vec orthoCamUp;
     if (unk104 & 0x10) {
-        VECSubtract(&unk1C4, &unk1AC, &sp20);
-        sp38 = sp20;
-        VECNormalize(&sp38, &sp38);
-        VECCrossProduct(&sp38, &unk1B8, &sp14);
-        sp2C = sp14;
-        VECNormalize(&sp2C, &sp2C);
-        VECCrossProduct(&sp2C, &sp38, &sp8);
-        unk1B8 = sp8;
+        VECSubtract(&targetPos, &camPos, &disp);
+        unitDisp = disp;
+        VECNormalize(&unitDisp, &unitDisp);
+        VECCrossProduct(&unitDisp, &camUp, &cross);
+        unitCross = cross;
+        VECNormalize(&unitCross, &unitCross);
+        VECCrossProduct(&unitCross, &unitDisp, &orthoCamUp);
+        camUp = orthoCamUp;
         unk104 = (unk104 & ~0x10) | 0x20;
     }
+}
+
+// TODO: these two inline functions might be members of GSvec
+static inline BOOL IsZeroVector(const Vec& v)
+{
+    if (!(v.x < 0.00001f && v.x > -0.00001f &&
+          v.y < 0.00001f && v.y > -0.00001f &&
+          v.z < 0.00001f && v.z > -0.00001f))
+    {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static inline BOOL AreVectorsEqual(const Vec& a, const Vec& b)
+{
+    if (!((a.x - b.x) < 0.00001f && (a.x - b.x) > -0.00001f &&
+          (a.y - b.y) < 0.00001f && (a.y - b.y) > -0.00001f &&
+          (a.z - b.z) < 0.00001f && (a.z - b.z) > -0.00001f))
+    {
+        return FALSE;
+    }
+    return TRUE;
 }
 
 void GScamera::func3()
@@ -246,10 +281,10 @@ void GScamera::func3()
     Mtx sp110;
     Mtx spE0;
     Mtx spB0;
-    Vec spA4;
+    Vec normDisp;
     Vec sp98;
     Vec sp8C;
-    Vec sp80;
+    Vec disp;
     Vec sp74;
     Vec sp68;
     Vec sp5C;
@@ -270,35 +305,22 @@ void GScamera::func3()
         sp8C.y = unk1D0->unkD0[1][3];
         sp8C.z = unk1D0->unkD0[2][3];
                 
-        unk1C4.x = sp8C.x;
-        unk1C4.y = sp8C.y;
-        unk1C4.z = sp8C.z;
+        targetPos = sp8C;
         
-        VECSubtract(&unk1C4, &unk1AC, &sp80);
-        spA4 = sp80;
-        VECNormalize(&spA4, &spA4);
-        VECCrossProduct(&spA4, &lbl_80493614, &sp74);
+        VECSubtract(&targetPos, &camPos, &disp);
+        normDisp = disp;
+        VECNormalize(&normDisp, &normDisp);
+        VECCrossProduct(&normDisp, &GSjHat, &sp74);
         sp98 = sp74;
         
-        // TODO: possibly an inline function
-        BOOL flag;
-        if (!(sp98.x < 0.00001f && sp98.x > -0.00001f &&
-              sp98.y < 0.00001f && sp98.y > -0.00001f &&
-              sp98.z < 0.00001f && sp98.z > -0.00001f))
-        {
-            flag = FALSE;
-        } else {
-            flag = TRUE;
-        }
-        
-        if (flag) {
-            VECCrossProduct(&spA4, &lbl_80493620, &sp68);
+        if (IsZeroVector(sp98)) {
+            VECCrossProduct(&normDisp, &GSkHat, &sp68);
             sp98 = sp68;
         }
         // TODO: possibly inlined. Same code in func_801DE524
         VECNormalize(&sp98, &sp98);
-        VECCrossProduct(&sp98, &spA4, &sp5C);
-        unk1B8 = sp5C;
+        VECCrossProduct(&sp98, &normDisp, &sp5C);
+        camUp = sp5C;
         unk104 = (unk104 & ~0x10) | 0x20;
     }
     
@@ -307,54 +329,33 @@ void GScamera::func3()
     
     if ((unk104 & 0x20) || r30) {
         MTXInverse(unkD0, sp110);
-        MTXMultVec(sp110, &unk1AC, &sp50);
+        MTXMultVec(sp110, &camPos, &sp50);
         unk188 = sp50;
-        MTXMultVecSR(sp110, &unk1B8, &sp44);
+        MTXMultVecSR(sp110, &camUp, &sp44);
         unk194 = sp44;
-        MTXMultVec(sp110, &unk1C4, &sp38);
+        MTXMultVec(sp110, &targetPos, &sp38);
         unk1A0 = sp38;
         
         if (r30)
             GSnull::func3();
         
         MTXMultVec(unkD0, &unk188, &sp2C);
-        unk1AC = sp2C;
+        camPos = sp2C;
         MTXMultVecSR(unkD0, &unk194, &sp20);
-        unk1B8 = sp20;
+        camUp = sp20;
         MTXMultVec(unkD0, &unk1A0, &sp14);
-        unk1C4 = sp14;
+        targetPos = sp14;
         
-        // if unk1B8 is a zero vector, assign lbl_80493614 to it
-        BOOL flag;
-        if (!(unk1B8.x < 0.00001f && unk1B8.x > -0.00001f &&
-              unk1B8.y < 0.00001f && unk1B8.y > -0.00001f &&
-              unk1B8.z < 0.00001f && unk1B8.z > -0.00001f))
-        {
-            flag = FALSE;
-        } else {
-            flag = TRUE;
+        if (IsZeroVector(camUp))
+            camUp = GSjHat;
+        
+        if (AreVectorsEqual(camPos, targetPos)) {
+            VECAdd(&camPos, &GSkHat, &sp8);
+            targetPos = sp8;
         }
         
-        if (flag)
-            unk1B8 = lbl_80493614;
-        
-        // checking vector equality between unk1AC and unk1C4
-        if (!((unk1AC.x - unk1C4.x) < 0.00001f && (unk1AC.x - unk1C4.x) > -0.00001f &&
-              (unk1AC.y - unk1C4.y) < 0.00001f && (unk1AC.y - unk1C4.y) > -0.00001f &&
-              (unk1AC.z - unk1C4.z) < 0.00001f && (unk1AC.z - unk1C4.z) > -0.00001f))
-        {
-            flag = FALSE;
-        } else {
-            flag = TRUE;
-        }
-        
-        if (flag) {
-            VECAdd(&unk1AC, &lbl_80493620, &sp8);
-            unk1C4 = sp8;
-        }
-        
-        MTXLookAt(unk1D4, &unk1AC, &unk1B8, &unk1C4);
-        MTXInverse(unk1D4, spE0);
+        MTXLookAt(modelview, &camPos, &camUp, &targetPos);
+        MTXInverse(modelview, spE0);
         MTXCopy(spE0, unk204);
         MTXTranspose(unk204, spB0);
         MTXCopy(spB0, unk234);
@@ -394,19 +395,9 @@ void func_801DEA3C(Mtx p1, GScamera* p2, Mtx p3, BOOL p4)
     sp30.y = f1;
     sp30.z = f0;
     if (p4) {
-        VECSubtract(&p2->unk1AC, &sp30, &sp24);
+        VECSubtract(&p2->camPos, &sp30, &sp24);
         sp24.y = 0.0f;
-        BOOL flag;
-        if (!(sp24.x < 0.00001f && sp24.x > -0.00001f &&
-              sp24.y < 0.00001f && sp24.y > -0.00001f &&
-              sp24.z < 0.00001f && sp24.z > -0.00001f))
-        {
-            flag = FALSE;
-        } else {
-            flag = TRUE;
-        }
-        
-        if (flag) {
+        if (IsZeroVector(sp24)) {
             MTXCopy(lbl_804932E0, p1);
             return;
         } else {
@@ -423,7 +414,7 @@ void func_801DEA3C(Mtx p1, GScamera* p2, Mtx p3, BOOL p4)
             if (sp24.x < 0.0f)
                 f1 = -f1;
 
-            QUATRotAxisRad(&sp8, &lbl_80493614, f1);
+            QUATRotAxisRad(&sp8, &GSjHat, f1);
             MTXQuat(sp40, &sp8);
             MTXConcat(sp40, sp70, sp70);
         }
@@ -580,9 +571,9 @@ lbl_801DEC24:
 /* 801DEC30 001DA890  40 80 00 08 */	bge lbl_801DEC38
 /* 801DEC34 001DA894  FC 20 08 50 */	fneg f1, f1
 lbl_801DEC38:
-/* 801DEC38 001DA898  3C 80 80 49 */	lis r4, lbl_80493614@ha
+/* 801DEC38 001DA898  3C 80 80 49 */	lis r4, GSjHat@ha
 /* 801DEC3C 001DA89C  38 61 00 08 */	addi r3, r1, 8
-/* 801DEC40 001DA8A0  38 84 36 14 */	addi r4, r4, lbl_80493614@l
+/* 801DEC40 001DA8A0  38 84 36 14 */	addi r4, r4, GSjHat@l
 /* 801DEC44 001DA8A4  48 09 E4 E1 */	bl C_QUATRotAxisRad
 /* 801DEC48 001DA8A8  38 61 00 40 */	addi r3, r1, 0x40
 /* 801DEC4C 001DA8AC  38 81 00 08 */	addi r4, r1, 8
@@ -622,11 +613,11 @@ lbl_801DEC9C:
 
 void GScamera::func1(float p1)
 {
-    float f31 = func_801F3C7C(this) ? 0.0f : p1;
+    float f31 = func_801F3C7C(this) ? 0.0f : p1; // TODO: convert to inherited GSnull member
     func_801DDC84(f31);
     func3();
     func_801DE1F8();
-    func_801F3904(this, f31);
+    func_801F3904(this, f31); // TODO: convert to inherited GSnull member
 }
 
 void GScamera::func2(BOOL p1)

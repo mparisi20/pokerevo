@@ -108,14 +108,14 @@ lbl_80493320:
 .global lbl_80493330
 lbl_80493330:
 	.skip 0x2D8
-.global lbl_80493608
-lbl_80493608:
+.global GSiHat
+GSiHat:
 	.skip 0xC
-.global lbl_80493614
-lbl_80493614:
+.global GSjHat
+GSjHat:
 	.skip 0xC
-.global lbl_80493620
-lbl_80493620:
+.global GSkHat
+GSkHat:
 	.skip 0xC
 .global lbl_8049362C
 lbl_8049362C:
