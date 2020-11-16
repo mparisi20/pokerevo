@@ -2,6 +2,7 @@
 
 .section .text, "ax"  # 0x80006980 - 0x803E1E60
 
+# ModelBreak ctor
 .global func_8021D424
 func_8021D424:
 /* 8021D424 00219084  94 21 FF E0 */	stwu r1, -0x20(r1)

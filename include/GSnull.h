@@ -33,11 +33,31 @@ struct gUnkClass10_1 : public gUnkClass10
     gUnkClass11* unk48;
 };
 
+struct gUnkClass16
+{
+    u8 unk0[0x10C]; // pad
+    Mtx unk10C;
+    Mtx unk13C;
+};
+
+struct gUnkClass15
+{
+    u8 unk0[0x8]; //pad
+    gUnkClass16** unk8;
+    u8 unkC[0xD2]; //pad
+    u16 unkDE;
+};
+
 class GSnull : public GSblendObject
 {
 protected:
     u16 unk10;
-    u8 unk12[0xBE];
+    u8 unk12[0xA6]; // pad
+    
+    gUnkClass15* unkB8;
+    
+    u8 unkBC[0x14]; // pad
+    
     Mtx unkD0;
 public:
     GSnull(u8 p1); // 801F1AE8

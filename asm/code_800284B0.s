@@ -1944,6 +1944,7 @@ lbl_8002A264:
 /* 8002A28C 00025EEC  38 21 01 A0 */	addi r1, r1, 0x1a0
 /* 8002A290 00025EF0  4E 80 00 20 */	blr
 
+# GSvec parameterless constructor?
 .global __ct__11gUnkClass14Fv
 __ct__11gUnkClass14Fv:
 /* 8002A294 00025EF4  4E 80 00 20 */	blr
@@ -2033,6 +2034,7 @@ func_8002A34C:
 /* 8002A354 00025FB4  B0 03 00 00 */	sth r0, 0(r3)
 /* 8002A358 00025FB8  4E 80 00 20 */	blr
 
+# GSvec copy constructor?
 .global func_8002A35C
 func_8002A35C:
 /* 8002A35C 00025FBC  C0 44 00 00 */	lfs f2, 0(r4)

@@ -10,6 +10,22 @@ namespace
         u16 unk2;
     };
     
+    struct unkClass4
+    {
+        u16 unk0;
+        u16 unk2;
+        u16 unk4;
+    };
+    
+    struct unkClass5
+    {
+        u16 unk0; // index into an array of Vec
+        u16 unk2;
+        u16 unk4;
+        u16 unk6;
+        u16 unk8;
+    };
+    
     // NOTE: could just be an array of float
     struct unkClass2
     {
@@ -34,11 +50,9 @@ namespace
     
 }
 
-// size == 0xC
-struct gUnkClass14
+// TODO: is this Vec? GSvec?
+struct gUnkClass14 : public Vec
 {
-    u8 unk0[0xC]; // pad
-    
     gUnkClass14(); // 8002A294
 };
     
@@ -55,8 +69,13 @@ struct gUnkClass10_2 : public gUnkClass10
     
     u16 unk48;
     unkClass* unk4C;
+    u16 unk50;
+    unkClass4* unk54;
+    u16* unk58;
+    u16 unk5C;
+    unkClass5* unk60;
     
-    u8 unk4A[0x1E]; // pad
+    u8 unk64[0x4]; // pad
     
     unkClass2* unk68;
     
@@ -66,25 +85,17 @@ class GSvolume : public GSnull
 {
     u16 unk104;
     u16 unk106;
-    
-    
     Vec unk108;
     Vec unk114;
-    
-    
     unkClass3 unk120;
-    
-    
-    
     gUnkClass14* unk13C;
     gUnkClass14* unk140;
     gUnkClass10_2* unk144;
-    
-    
 public:
     GSvolume(void* p1, gUnkClass10_2* p2); // 801DF040
     void func_801DF2CC();
     void func_801DF3F8(const Mtx p2, const Mtx p3, u32 p4, u32 p5, Vec* p6, const Vec* p7) const;
+    void func_801DF528();
     virtual ~GSvolume(); // 801DF204
 };
 
@@ -174,7 +185,7 @@ extern float lbl_80641C54;
 
 
 #ifdef NONMATCHING_801DF2CC
-// static
+// private
 void GSvolume::func_801DF2CC()
 {
     Vec* arr = func_80220AF0(&unk120);
@@ -292,8 +303,8 @@ lbl_801DF390:
 void PSVECScale(const Vec* src, Vec* dst, float scale);
 #define VECScale PSVECScale
 
-// static
-void GSvolume::func_801DF3F8(const Mtx p2, const Mtx p3, u32 p4, u32 p5, Vec* p6, const Vec* p7) const
+// private
+void GSvolume::func_801DF3F8(const Mtx mtxA, const Mtx mtxB, u32 p4, u32 p5, Vec* v, const Vec* w) const
 {
     Vec sp2C;
     Vec sp20;
@@ -303,35 +314,23 @@ void GSvolume::func_801DF3F8(const Mtx p2, const Mtx p3, u32 p4, u32 p5, Vec* p6
     float f31 = p4 / 65536.0f;
     float f30 = p5 / 65536.0f;
 
-    VECScale(p6, p6, 1.0f - (f31 + f30));
-    MTXMultVec(p2, p7, &sp2C);
+    VECScale(v, v, 1.0f - (f31 + f30));
+    MTXMultVec(mtxA, w, &sp2C);
     VECScale(&sp2C, &sp20, f31);
-    VECAdd(p6, &sp20, p6);
-    MTXMultVec(p3, p7, &sp14);
+    VECAdd(v, &sp20, v);
+    MTXMultVec(mtxB, w, &sp14);
     sp2C = sp14;
     VECScale(&sp2C, &sp8, f30);
-    VECAdd(p6, &sp8, p6);
+    VECAdd(v, &sp8, v);
 }
 
 // TODO: implement the rest of OSSetGQR[n], and move to OS header
 
-#define OS_GQR_SCALE_65536 16
+#define OS_GQR_SCALE_NONE 0
+#define OS_GQR_SCALE_65536 0x10
+
+
 #define OS_GQR_U16 5
-
-struct gUnkClass16
-{
-    u8 unk0[0x8]; //pad
-    void* unk8; // TOOD: ptr to another class
-    u8 unkC[0xD2]; //pad
-    u16 unkDE;
-};
-
-struct gUnkClass15
-{
-    u8 unk0[0xB8]; // pad
-    gUnkClass16* unkB8;
-};
-
 
 inline void OSSetGQR3(u32 type, u32 scale)
 {
@@ -339,23 +338,133 @@ inline void OSSetGQR3(u32 type, u32 scale)
     asm { mtspr GQR3, val }
 }
 
+// paired single
+// Mtx and Vec parameters?
+void func_8021CAA0(const Mtx p1, const gUnkClass14* p2, gUnkClass14* p3, u16 count);
 #if 0
+{
+    for (size_t i = 0; i < count; i++) {
+        // ...
+    }
+}
+#endif
+
+void func_8021CC54(Mtx, Mtx, u16*, gUnkClass14*, gUnkClass14*, u16);
+#if 0
+{
+    
+    
+}
+#endif
+
+
+#if 1
 
 void GSvolume::func_801DF528()
 {
+    Vec sp14;
+    Vec sp8;
+    
     gUnkClass10_2* r4 = unk144;
-    if (unk13C != r4->unk38) {
+    gUnkClass14* r29 = unk13C;
+    gUnkClass14* r28 = unk144->unk38;
+    if (r29 != r28) {
         OSSetGQR3(OS_GQR_U16, OS_GQR_SCALE_65536);
         u16 r26 = r4->unk48;
-        unkClass* r30 = r4->unk4C;
-        while (r26--) {
-            unkB8
+        if (r26) {
+            unkClass* r30 = r4->unk4C;
+            while (r26--) {
+                u16 r27 = r30->unk0; // u16, r27, counter
+                gUnkClass16* r3; // 0x30 byte struct... 12 floats
+                u16 r4 = r30->unk2;
+                if (!unkB8->unk8)
+                    r3 = 0;
+                else if (r4 >= unkB8->unkDE) // u16
+                    r3 = 0;
+                else
+                    r3 = unkB8->unk8[r4]; // sizeof element == 4
+                func_8021CAA0(r3->unk13C, r28, r29, r27);
+                r30++;
+                r29 += r27; // sizeof element == 12
+                r28 += r27;
+            }
         }
-        
+        u16 r31 = unk144->unk50;
+        if (r31) {
+            unkClass4* r27 = unk144->unk54;
+            u16* r26_3 = unk144->unk58; // u16* ?
+            while (r31--) {
+                u16 temp1 = r27->unk0;
+                u16 temp2 = r27->unk2;
+                gUnkClass16* r3;
+                gUnkClass16* r4;
+                if (!unkB8->unk8)
+                    r3 = 0;
+                else if (temp2 >= unkB8->unkDE)
+                    r3 = 0;
+                else
+                    r3 = unkB8->unk8[temp2];
+                
+                u16 temp3 = r27->unk4;
+                if (!unkB8->unk8)
+                    r4 = 0;
+                else if (temp3 >= unkB8->unkDE)
+                    r4 = 0;
+                else
+                    r4 = unkB8->unk8[temp3]; // sizeof element == 4
+                
+                func_8021CC54(r3->unk13C, r4->unk13C, r26_3, r28, r29, temp1);
+                r27++; // sizeof element == 6
+                r26_3 += temp1; // sizeof element == 2
+                r29 += temp1;
+                r28 += temp1;
+            }
+        }
+        OSSetGQR3(OS_GQR_U16, OS_GQR_SCALE_NONE);
+        r31 = unk144->unk5C;
+        if (r31) {
+            unkClass5* r26_2 = unk144->unk60;
+            while (r31--) {
+                u16 temp0 = r26_2->unk0;
+                u16 temp2 = r26_2->unk2;
+                
+                gUnkClass16* r28_2;
+                gUnkClass16* r5;
+                
+                // try to get array element
+                if (!unkB8->unk8) // ptr to array
+                    r28_2 = 0;
+                else if (temp2 >= unkB8->unkDE) // array size
+                    r28_2 = 0;
+                else
+                    r28_2 = unkB8->unk8[temp2]; // sizeof el == 4
+                
+                if (r26_2->unk8) {
+                    u16 temp4 = r26_2->unk4;
+                    if (!unkB8->unk8)
+                        r5 = 0;
+                    else if (temp4 >= unkB8->unkDE)
+                        r5 = 0;
+                    else
+                        r5 = unkB8->unk8[temp4]; // sizeof el = 4
+                    
+                    func_801DF3F8(r28_2->unk10C, r5->unk10C, r26_2->unk6, 
+                    r26_2->unk8, 
+                    &unk13C[temp0], 
+                    &unk144->unk38[temp0]);
+                } else {
+                    Vec* r29 = &unk13C[temp0];
+                    Vec* r30 = &unk144->unk38[temp0];
+                    float f28 = r26_2->unk6 / 65536.0f;
+                    VECScale(r29, r29, 1.0f - f28);
+                    MTXMultVec(r28_2->unk10C, r30, &sp8);
+                    VECScale(&sp8, &sp14, f28);
+                    VECAdd(r29, &sp14, r29);
+                }
+                r26_2++;
+            }
+        }
     }
-    
-    
-    
 }
 
 
