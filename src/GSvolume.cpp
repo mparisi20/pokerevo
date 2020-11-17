@@ -29,10 +29,24 @@ namespace
     struct unkClass6
     {
         u16 unk0; // index into an array of gUnkClass14 (Vec)
-        unkClass4* unk4; // TODO: ptr to another class with 3 u16s?
+        unkClass4* unk4;
     };
     
-    // NOTE: could just be an array of float
+    // configure quantization of float -> s16
+    struct unkClass7
+    {
+        u16 unk0; // array size
+        u8 unk2; // array index that gets scaled by a float, then rounded down
+        u8 unk3; // upper 4 bits related to quantization coefficient, lower 4 determines s16/float
+        
+        // TODO: arrays or structs?
+        union
+        {
+            float (*unk4f)[6];
+            s16 (*unk4s16)[6];
+        };
+    };
+    
     struct unkClass2
     {
         float unk0;
@@ -41,18 +55,16 @@ namespace
         float unkC;
         float unk10;
         float unk14;
+        u16 unk18;
+        unkClass7* unk1C;
     };
     
-    // TODO: same as unkClass2?
-    // TODO: struct size >= 0x1C
     struct unkClass3
     {
         Vec unk0;
         Vec unkC;
-        Mtx* unk14;
-    };
-    ///////////////
-    
+        Mtx* unk18;
+    };    
     
 }
 
@@ -65,6 +77,7 @@ struct gUnkClass14 : public Vec
         x = o.x;
         y = o.y;
         z = o.z;
+        return *this;
     }
 };
     
@@ -110,6 +123,7 @@ public:
     void func_801DF3F8(const Mtx p2, const Mtx p3, u32 p4, u32 p5, Vec* p6, const Vec* p7) const;
     void func_801DF528();
     void func_801DF85C();
+    void func_801DF9D4(s16 p1, BOOL p2, float p3);
     virtual ~GSvolume(); // 801DF204
 };
 
@@ -146,7 +160,7 @@ GSvolume::GSvolume(void* p1, gUnkClass10_2* p2) : GSnull(p1, p2)
     unk114.z = 0.0f;    
 
     
-    unk120.unk14 = &unkD0;
+    unk120.unk18 = &unkD0;
     
     if (p2->unk30 & 0x2) {
         if (p2->unk32 != 0) {
@@ -192,8 +206,14 @@ GSvolume::~GSvolume()
     }
 }
 
+// TODO: member functions?
+
 // TODO: seems to return array of Vec
 Vec* func_80220AF0(unkClass3*);
+void func_80220C78(unkClass3*, unkClass3*);
+
+
+
 
 extern float lbl_80641C54;
 
@@ -371,6 +391,7 @@ void func_8021CC54(Mtx, Mtx, u16*, gUnkClass14*, gUnkClass14*, u16);
 }
 #endif
 
+// NONMATCHING: lots of regswaps
 // private
 void GSvolume::func_801DF528()
 {
@@ -482,6 +503,8 @@ void GSvolume::func_801DF528()
 float PSVECMag(const Vec* v);
 #define VECMag PSVECMag
 
+// modifies the Vec at unk140[unk144->unk40->unk0] to the scaled 
+// cross product of two difference vectors
 
 // private
 void GSvolume::func_801DF85C()
@@ -511,12 +534,119 @@ void GSvolume::func_801DF85C()
                     else
                         f1 = 1.0e-5f;
                 }
-                VECScale(r27, r27, 1.0f / f1);
+                VECScale(r27, r27, 1.0f / f1); // make a unit vector by dividing out the norm
             }
         }
     }
 }
 
+// private
+void GSvolume::func_801DF9D4(s16 p1, BOOL p2, float p3)
+{
+    unkClass3 sp8;
+        
+    unkClass2* r6 = unk144->unk68;
+    u16 r0 = r6->unk18;
+    if (r0) {
+        if (p1 >= r0)
+            p1 = 0;
+        
+        unkClass7* r8 = &r6->unk1C[p1];
+        if (r8->unk0) {
+            s32 r9 = r8->unk2 * p3;
+            // Array range check
+            if (r9 < 0) // min index?
+                r9 = 0;
+            else if (r9 >= (s32)r8->unk0) // array length?
+                r9 = r8->unk0 - 1;
+            
+            sp8.unk0.x = 1.0e38f;
+            sp8.unk0.y = 1.0e38f;
+            sp8.unk0.z = 1.0e38f;
+            
+            sp8.unkC.x = -1.0e38f;
+            sp8.unkC.y = -1.0e38f;
+            sp8.unkC.z = -1.0e38f;
+            
+            sp8.unk18 = 0;
+            
+            u8 r6 = r8->unk3;
+            switch (r6 & 0xf) {
+                case 0:
+                    float (*r5)[6] = &r8->unk4f[r9];
+                    if (p2) {
+                        sp8.unk0.x = (*r5)[0];
+                        sp8.unk0.y = (*r5)[1];
+                        sp8.unk0.z = (*r5)[2];
+                        sp8.unkC.x = (*r5)[3];
+                        sp8.unkC.y = (*r5)[4];
+                        sp8.unkC.z = (*r5)[5];
+                        
+                        unk120.unk18 = 0;
+                        func_80220C78(&unk120, &sp8);
+                        unk120.unk18 = &unkD0;
+                    } else {
+                        unk120.unk0.x = (*r5)[0];
+                        unk120.unk0.y = (*r5)[1];
+                        unk120.unk0.z = (*r5)[2];
+                        unk120.unkC.x = (*r5)[3];
+                        unk120.unkC.y = (*r5)[4];
+                        unk120.unkC.z = (*r5)[5];
+                    }
+                    break;
+                case 8:
+                    s16 (*r5_2)[6] = &r8->unk4s16[r9]; // size == 12... 6 s16s
+                    r6 >>= 4;
+                    if (p2) {
+                        sp8.unk0.x = static_cast<float>((*r5_2)[0]) / (1 << r6); // f3
+                        sp8.unk0.y = static_cast<float>((*r5_2)[1]) / (1 << r6); // f4
+                        sp8.unk0.z = static_cast<float>((*r5_2)[2]) / (1 << r6); // f3
+                        sp8.unkC.x = static_cast<float>((*r5_2)[3]) / (1 << r6); // f2
+                        sp8.unkC.y = static_cast<float>((*r5_2)[4]) / (1 << r6); // f1
+                        sp8.unkC.z = static_cast<float>((*r5_2)[5]) / (1 << r6); // f0
+                        
+                        unk120.unk18 = 0;
+                        func_80220C78(&unk120, &sp8);
+                        unk120.unk18 = &unkD0;
+                    } else {
+                        unk120.unk0.x = static_cast<float>((*r5_2)[0]) / (1 << r6);
+                        unk120.unk0.y = static_cast<float>((*r5_2)[1]) / (1 << r6);
+                        unk120.unk0.z = static_cast<float>((*r5_2)[2]) / (1 << r6);
+                        unk120.unkC.x = static_cast<float>((*r5_2)[3]) / (1 << r6);
+                        unk120.unkC.y = static_cast<float>((*r5_2)[4]) / (1 << r6);
+                        unk120.unkC.z = static_cast<float>((*r5_2)[5]) / (1 << r6);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
