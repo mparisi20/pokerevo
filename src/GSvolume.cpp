@@ -26,6 +26,12 @@ namespace
         u16 unk8;
     };
     
+    struct unkClass6
+    {
+        u16 unk0; // index into an array of gUnkClass14 (Vec)
+        unkClass4* unk4; // TODO: ptr to another class with 3 u16s?
+    };
+    
     // NOTE: could just be an array of float
     struct unkClass2
     {
@@ -54,6 +60,12 @@ namespace
 struct gUnkClass14 : public Vec
 {
     gUnkClass14(); // 8002A294
+    gUnkClass14& operator=(const Vec& o)
+    {
+        x = o.x;
+        y = o.y;
+        z = o.z;
+    }
 };
     
 
@@ -65,7 +77,8 @@ struct gUnkClass10_2 : public gUnkClass10
     u16 unk34;
     gUnkClass14* unk38;
     gUnkClass14* unk3C;
-    u8 unk40[0x8]; // pad
+    unkClass6* unk40;
+    u8 unk44[0x4]; // pad
     
     u16 unk48;
     unkClass* unk4C;
@@ -96,6 +109,7 @@ public:
     void func_801DF2CC();
     void func_801DF3F8(const Mtx p2, const Mtx p3, u32 p4, u32 p5, Vec* p6, const Vec* p7) const;
     void func_801DF528();
+    void func_801DF85C();
     virtual ~GSvolume(); // 801DF204
 };
 
@@ -357,9 +371,7 @@ void func_8021CC54(Mtx, Mtx, u16*, gUnkClass14*, gUnkClass14*, u16);
 }
 #endif
 
-
-#if 1
-
+// private
 void GSvolume::func_801DF528()
 {
     Vec sp14;
@@ -467,8 +479,43 @@ void GSvolume::func_801DF528()
     }
 }
 
+float PSVECMag(const Vec* v);
+#define VECMag PSVECMag
 
-#endif
+
+// private
+void GSvolume::func_801DF85C()
+{
+    Vec sp20;
+    Vec sp14;
+    Vec sp8;
+    
+    gUnkClass10_2* r4 = unk144;
+    if (unk140 != r4->unk3C) {
+        u16 r30 = r4->unk34;
+        unkClass6* r29 = r4->unk40;
+        for (u16 r28 = 0; r28 < r30; r28++, r29++) {
+            unkClass4* r7 = r29->unk4;
+            gUnkClass14* r27 = &unk140[r29->unk0];
+            gUnkClass14* r26 = &unk13C[r7->unk0];
+            gUnkClass14* r25 = &unk13C[r7->unk4];
+            VECSubtract(&unk13C[r7->unk2], r26, &sp20);
+            VECSubtract(r25, r26, &sp14);
+            VECCrossProduct(&sp20, &sp14, &sp8);
+            *r27 = sp8;
+            float f1 = VECMag(r27);
+            if (f1 > 1.0e-5f) {
+                if (f1 < 1.0e-5f && f1 > -1.0e-5f) {
+                    if (f1 < 0.0f)
+                        f1 = -1.0e-5f;
+                    else
+                        f1 = 1.0e-5f;
+                }
+                VECScale(r27, r27, 1.0f / f1);
+            }
+        }
+    }
+}
 
 
 }
