@@ -636,24 +636,12 @@ void GSvolume::func1(float p1)
     if (func_801F3C7C())
         p1 = 0.0f;
     
-    u16 r30 = unk10 & 0x1;
-    u16 r0;
+    BOOL r30 = unk10 & 0x1;
     GSnull::func1(p1);
     if (unkB8) {
-        
         gUnkClass7* r5 = unk4;
-        
-        r0 = (r5) ? ((r5->unk0) ? r5->unk0->unk0 : 0xFFFF) : 0xFFFF;
-       /* if (r5) {
-            if (r5->unk0) {
-                r0 = r5->unk0->unk0; // get gUnkClass8 node id
-            } else {
-                r0 = 0xFFFF;
-            }
-        } else {
-            r0 = 0xFFFF;
-        }
-        */
+        // get gUnkClass8 node id
+        u16 r0 = (r5) ? ((r5->unk0) ? r5->unk0->unk0 : 0xFFFF) : 0xFFFF;
         float f1;
         if ((s32)r0 != 0xFFFF) {
             if (r5) {
@@ -687,17 +675,8 @@ void GSvolume::func1(float p1)
         
         if (flag || func_801F5EBC(unkB8)) {
             gUnkClass7* r4 = unk8;
-            r0 = (r4) ? ((r4->unk0) ? r4->unk0->unk0 : 0xFFFF) : 0xFFFF;
-            /*if (r4) {
-                if (r4->unk0) {
-                    r0 = r4->unk0->unk0; // get gUnkClass8 node id
-                } else {
-                    r0 = 0xFFFF;
-                }
-            } else {
-                r0 = 0xFFFF;
-            }*/
-            
+            // get gUnkClass8 node id
+            u16 r0 = (r4) ? ((r4->unk0) ? r4->unk0->unk0 : 0xFFFF) : 0xFFFF;
             if ((s32)r0 != 0xFFFF) {
                 if (r4) {
                     gUnkClass8* head = r4->unk0;
@@ -720,7 +699,6 @@ void GSvolume::func1(float p1)
             }
         }
     }
-    // ff94
     func_801DF2CC();
     if (r30 && unk144->unk64) {
         MTXConcat(unkD0, unk144->unk64, sp8);
