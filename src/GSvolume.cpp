@@ -47,6 +47,14 @@ namespace
         };
     };
     
+    struct unkClass8
+    {
+        u16 unk0; // index into unk140 of GSvolume
+        u8 unk2[0x1]; // pad
+        u8 unk3; // loop counter in GSvolume::func_801E0058
+        u16* unk4; // points into an array of indices into unk13C of GSvolume
+    };
+
     struct unkClass2
     {
         float unk0;
@@ -58,14 +66,13 @@ namespace
         u16 unk18;
         unkClass7* unk1C;
     };
-    
+
     struct unkClass3
     {
         Vec unk0;
         Vec unkC;
         MtxPtr unk18;
-    };    
-    
+    };
 }
 
 // TODO: is this Vec? GSvec?
@@ -125,6 +132,7 @@ public:
     void func_801DF85C();
     void func_801DF9D4(u32 p1, BOOL p2, float p3);
     void func_801DFFFC();
+    BOOL func_801E0058(unkClass8* p1, gUnkClass14* p2);
     virtual ~GSvolume(); // 801DF204
     virtual void func1(float p1); // 801DFD90
 };
@@ -717,6 +725,112 @@ void GSvolume::func_801DFFFC()
     unk106 &= ~0x10;
 }
 
+// NONMATCHING: r3/r0 regswap at the beginning of each do loop, and instruction misordering only
+// at the beginning of the first loop
+// private
+BOOL GSvolume::func_801E0058(unkClass8* p1, gUnkClass14* p2)
+{
+    Vec sp5C;
+    Vec sp50;
+    Vec sp44;
+    Vec sp38;
+    Vec sp2C;
+    Vec sp20;
+    Vec sp14;
+    Vec sp8;
+    
+    u16* r31;
+    u32 r30;
+    BOOL r29;
+    
+    gUnkClass14* r6 = &unk140[p1->unk0]; // u16 index
+    r29 = FALSE;
+    
+    float f1 = (r6->x > 0.0f) ? r6->x : -r6->x;
+    float f2 = (r6->y > 0.0f) ? r6->y : -r6->y;
+    float f3 = (r6->z > 0.0f) ? r6->z : -r6->z;
+    
+    s32 state; // r6
+    if (f1 > f2) {
+        if (f1 > f3) {
+            state = 0;
+        } else {
+            state = 2;
+        }
+    } else if (f2 > f3) {
+        state = 1;
+    } else {
+        state = 2;
+    }
+    
+    r30 = p1->unk3; // loop counter... must be > 0
+    r31 = p1->unk4; // start ptr
+    u16* r4 = &r31[r30 - 1]; // end ptr
+    gUnkClass14* r3 = &unk13C[*r4];
+    if (state == 1) {
+        BOOL r5 = (p2->x >= r3->x);
+        // TODO: inline function?
+        do {
+            BOOL r26, r0;
+            gUnkClass14* r25 = &unk13C[*r31];
+            r3 = &unk13C[*r4];
+            r26 = (p2->x >= r25->x);
+            if (r5 != r26) {
+                VECSubtract(r3, r25, &sp44);
+                sp5C = sp44;
+                VECSubtract(r25, p2, &sp38);
+                sp50 = sp38;
+                r0 = (sp50.x * sp5C.z >= sp50.z * sp5C.x);
+                if (r26 == r0)
+                    r29 = !r29; // toggle
+            }
+            r4 = r31;
+            r5 = r26;
+            r31++;
+        } while (--r30);
+    } else if (state == 2) {
+        BOOL r5 = (p2->y >= r3->y);
+        do {
+            BOOL r26, r0;
+            gUnkClass14* r25 = &unk13C[*r31]; // r26
+            r3 = &unk13C[*r4]; 
+            r26 = (p2->y >= r25->y); // r25
+            if (r5 != r26) {
+                VECSubtract(r3, r25, &sp2C);
+                sp5C = sp2C;
+                VECSubtract(r25, p2, &sp20);
+                sp50 = sp20;
+                r0 = (sp50.y * sp5C.x >= sp50.x * sp5C.y);
+                if (r26 == r0)
+                    r29 = !r29; // toggle
+            }
+            r4 = r31;
+            r5 = r26;
+            r31++;
+        } while (--r30);
+    } else {
+        BOOL r5 = (p2->z >= r3->z);
+        do {
+            BOOL r26;
+            gUnkClass14* r25 = &unk13C[*r31]; // r26
+            r3 = &unk13C[*r4]; 
+            r26 = (p2->z >= r25->z); // r25
+            if (r5 != r26) {
+                VECSubtract(r3, r25, &sp14);
+                sp5C = sp14;
+                VECSubtract(r25, p2, &sp8);
+                sp50 = sp8;
+                BOOL r0 = (sp50.z * sp5C.y >= sp50.y * sp5C.z);
+                if (r26 == r0)
+                    r29 = !r29; // toggle
+            }
+            r4 = r31;
+            r5 = r26;
+            r31++;
+        } while (--r30);
+    }
+    return r29;
+}
 
 
 
