@@ -124,6 +124,7 @@ public:
     void func_801DF528();
     void func_801DF85C();
     void func_801DF9D4(u32 p1, BOOL p2, float p3);
+    void func_801DFFFC();
     virtual ~GSvolume(); // 801DF204
     virtual void func1(float p1); // 801DFD90
 };
@@ -705,6 +706,15 @@ void GSvolume::func1(float p1)
         MTXCopy(sp8, unkD0);
     }
     unk106 |= 0x10;
+}
+
+void GSvolume::func_801DFFFC()
+{
+    if (!unkB8 || !(unk106 & 0x10))
+        return;
+    func_801DF528();
+    func_801DF85C();
+    unk106 &= ~0x10;
 }
 
 
