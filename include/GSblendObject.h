@@ -6,6 +6,7 @@
 
 class GSblendObject : public GSanimationObject
 {
+protected:
     gUnkClass7* unk8;
     float unkC;
 public:

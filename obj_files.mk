@@ -241,7 +241,7 @@ SPLIT_O_FILES := 						                          \
 	$(BUILD_DIR)/asm/code_801E6BF8.o                                   \
 	$(BUILD_DIR)/asm/code_801ED3F0.o                                   \
 	$(BUILD_DIR)/asm/code_801EE044.o                                   \
-	$(BUILD_DIR)/asm/code_801F1AE8.o                                   \
+	$(BUILD_DIR)/asm/GSnull.o                                   \
 	$(BUILD_DIR)/asm/code_801F40E0.o                                   \
 	$(BUILD_DIR)/asm/code_801F98EC.o                                   \
 	$(BUILD_DIR)/asm/code_801FA094.o                                   \
@@ -266,7 +266,7 @@ SPLIT_O_FILES := 						                          \
 	$(BUILD_DIR)/asm/code_8021C220.o                                   \
 	$(BUILD_DIR)/asm/code_8021CAA0.o                                   \
 	$(BUILD_DIR)/asm/code_8021D0E0.o                                   \
-	$(BUILD_DIR)/asm/code_8021D424.o                                   \
+	$(BUILD_DIR)/asm/ModelBreak.o                                   \
 	$(BUILD_DIR)/asm/code_8021EA48.o                                   \
 	$(BUILD_DIR)/asm/code_8021FB44.o                                   \
 	$(BUILD_DIR)/asm/code_8022063C.o                                   \

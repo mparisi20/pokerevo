@@ -46,6 +46,10 @@ struct gUnkClass15
     gUnkClass16** unk8;
     u8 unkC[0xD2]; //pad
     u16 unkDE;
+    u8 unkE0[0x10]; //pad
+    u16 unkF0;
+    u8 unkF2[0x12]; //pad
+    u16 unk104;
 };
 
 class GSnull : public GSblendObject
@@ -62,15 +66,13 @@ protected:
 public:
     GSnull(u8 p1); // 801F1AE8
     GSnull(void* p1, gUnkClass10* p2); // 801F1BC8 // TODO: p1 type
+    void func_801F3904(float);
+    BOOL func_801F3C7C();
     virtual ~GSnull();    // 801F1F24
     virtual void func1(float p1); // 801F3960
     virtual void func2(BOOL p1); // 801F39E8
     virtual void func3(); // 801F3790
 };
-
-void func_801F3904(GSnull*, float); // TODO: member function
-BOOL func_801F3C7C(GSnull* p1); // TODO: member function
-
 
 #ifdef __cplusplus
 }

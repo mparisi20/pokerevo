@@ -6,7 +6,9 @@ extern "C" {
 #endif
 
 typedef float Mtx[3][4];
+typedef float (*MtxPtr)[4];
 typedef float Mtx44[4][4];
+typedef float (*Mtx44Ptr)[4];
 
 typedef struct
 {

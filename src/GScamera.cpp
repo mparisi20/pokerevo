@@ -622,11 +622,12 @@ lbl_801DEC9C:
 
 void GScamera::func1(float p1)
 {
-    float f31 = func_801F3C7C(this) ? 0.0f : p1;
-    func_801DDC84(f31);
+    if (func_801F3C7C())
+        p1 = 0.0f;
+    func_801DDC84(p1);
     func3();
     func_801DE1F8();
-    func_801F3904(this, f31);
+    func_801F3904(p1);
 }
 
 void GScamera::func2(BOOL p1)
