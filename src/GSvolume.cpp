@@ -4,6 +4,7 @@
 
 namespace
 {
+    // TODO: might all be u16 arrays
     struct unkClass
     {
         u16 unk0;
@@ -25,6 +26,7 @@ namespace
         u16 unk6;
         u16 unk8;
     };
+    ////////////////////////////////////////
 
     // configure quantization of float -> s16
     struct unkClass7
@@ -198,8 +200,6 @@ GSvolume::GSvolume(void* p1, gUnkClass10_2* p2) : GSnull(p1, p2)
 
 void func_801FA5DC(GSvolume*);
 
-
-// TODO: label GSnull's virtual methods with mangled names
 GSvolume::~GSvolume()
 {
     func_801FA5DC(this);
@@ -213,134 +213,48 @@ GSvolume::~GSvolume()
 
 // TODO: member functions?
 
-// TODO: seems to return array of Vec
+// TODO: seems to return array of 8 Vec/Point3d
 Vec* func_80220AF0(unkClass3*);
 void func_80220C78(unkClass3*, unkClass3*);
 
 
+// Create a bounding cube for the array of 8 Points retrieved from func_80220AF0,
+// with unk108 as the most negative point and unk114 as the most positive point
 
-
-extern float lbl_80641C54;
-
-
-#ifdef NONMATCHING_801DF2CC
 // private
 void GSvolume::func_801DF2CC()
 {
     Vec* arr = func_80220AF0(&unk120);
     Vec* r4 = arr + 1;
-    unk108 = arr[0];
-    unk114 = arr[0];
+    unk108 = arr[0]; // back lower left
+    unk114 = arr[0]; // front upper right
+    float f1;
     for (size_t i = 0; i < 7; r4++, i++) {
-        if (unk108.x > r4[i].x)
-            unk108.x = r4[i].x;
-        if (unk114.x < r4[i].x)
-            unk114.x = r4[i].x;
-        
-        if (unk108.y > r4[i].y)
-            unk108.y = r4[i].y;
-        if (unk114.y < r4[i].y)
-            unk114.y = r4[i].y;
-        
-        if (unk108.z > r4[i].z)
-            unk108.z = r4[i].z;
-        if (unk114.z < r4[i].z)
-            unk114.z = r4[i].z;
-    }
-    
-}
-#else
-asm void GSvolume::func_801DF2CC()
-{
-    nofralloc
-/* 801DF2CC 001DAF2C  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 801DF2D0 001DAF30  7C 08 02 A6 */	mflr r0
-/* 801DF2D4 001DAF34  90 01 00 14 */	stw r0, 0x14(r1)
-/* 801DF2D8 001DAF38  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 801DF2DC 001DAF3C  7C 7F 1B 78 */	mr r31, r3
-/* 801DF2E0 001DAF40  38 63 01 20 */	addi r3, r3, 0x120
-/* 801DF2E4 001DAF44  48 04 18 0D */	bl func_80220AF0
-/* 801DF2E8 001DAF48  C0 03 00 00 */	lfs f0, 0(r3)
-/* 801DF2EC 001DAF4C  38 00 00 07 */	li r0, 7
-/* 801DF2F0 001DAF50  38 83 00 0C */	addi r4, r3, 0xc
-/* 801DF2F4 001DAF54  D0 1F 01 08 */	stfs f0, 0x108(r31)
-/* 801DF2F8 001DAF58  C0 03 00 04 */	lfs f0, 4(r3)
-/* 801DF2FC 001DAF5C  D0 1F 01 0C */	stfs f0, 0x10c(r31)
-/* 801DF300 001DAF60  C0 03 00 08 */	lfs f0, 8(r3)
-/* 801DF304 001DAF64  D0 1F 01 10 */	stfs f0, 0x110(r31)
-/* 801DF308 001DAF68  C0 03 00 00 */	lfs f0, 0(r3)
-/* 801DF30C 001DAF6C  D0 1F 01 14 */	stfs f0, 0x114(r31)
-/* 801DF310 001DAF70  C0 03 00 04 */	lfs f0, 4(r3)
-/* 801DF314 001DAF74  D0 1F 01 18 */	stfs f0, 0x118(r31)
-/* 801DF318 001DAF78  C0 03 00 08 */	lfs f0, 8(r3)
-/* 801DF31C 001DAF7C  D0 1F 01 1C */	stfs f0, 0x11c(r31)
-/* 801DF320 001DAF80  7C 09 03 A6 */	mtctr r0
-lbl_801DF324:
-/* 801DF324 001DAF84  C0 24 00 00 */	lfs f1, 0(r4)
-/* 801DF328 001DAF88  C0 1F 01 08 */	lfs f0, 0x108(r31)
-/* 801DF32C 001DAF8C  FC 00 08 40 */	fcmpo cr0, f0, f1
-/* 801DF330 001DAF90  40 81 00 08 */	ble lbl_801DF338
-/* 801DF334 001DAF94  D0 3F 01 08 */	stfs f1, 0x108(r31)
-lbl_801DF338:
-/* 801DF338 001DAF98  C0 1F 01 14 */	lfs f0, 0x114(r31)
-/* 801DF33C 001DAF9C  FC 00 08 40 */	fcmpo cr0, f0, f1
-/* 801DF340 001DAFA0  40 80 00 08 */	bge lbl_801DF348
-/* 801DF344 001DAFA4  D0 3F 01 14 */	stfs f1, 0x114(r31)
-lbl_801DF348:
-/* 801DF348 001DAFA8  C0 24 00 04 */	lfs f1, 4(r4)
-/* 801DF34C 001DAFAC  C0 1F 01 0C */	lfs f0, 0x10c(r31)
-/* 801DF350 001DAFB0  FC 00 08 40 */	fcmpo cr0, f0, f1
-/* 801DF354 001DAFB4  40 81 00 08 */	ble lbl_801DF35C
-/* 801DF358 001DAFB8  D0 3F 01 0C */	stfs f1, 0x10c(r31)
-lbl_801DF35C:
-/* 801DF35C 001DAFBC  C0 1F 01 18 */	lfs f0, 0x118(r31)
-/* 801DF360 001DAFC0  FC 00 08 40 */	fcmpo cr0, f0, f1
-/* 801DF364 001DAFC4  40 80 00 08 */	bge lbl_801DF36C
-/* 801DF368 001DAFC8  D0 3F 01 18 */	stfs f1, 0x118(r31)
-lbl_801DF36C:
-/* 801DF36C 001DAFCC  C0 24 00 08 */	lfs f1, 8(r4)
-/* 801DF370 001DAFD0  C0 1F 01 10 */	lfs f0, 0x110(r31)
-/* 801DF374 001DAFD4  FC 00 08 40 */	fcmpo cr0, f0, f1
-/* 801DF378 001DAFD8  40 81 00 08 */	ble lbl_801DF380
-/* 801DF37C 001DAFDC  D0 3F 01 10 */	stfs f1, 0x110(r31)
-lbl_801DF380:
-/* 801DF380 001DAFE0  C0 1F 01 1C */	lfs f0, 0x11c(r31)
-/* 801DF384 001DAFE4  FC 00 08 40 */	fcmpo cr0, f0, f1
-/* 801DF388 001DAFE8  40 80 00 08 */	bge lbl_801DF390
-/* 801DF38C 001DAFEC  D0 3F 01 1C */	stfs f1, 0x11c(r31)
-lbl_801DF390:
-/* 801DF390 001DAFF0  38 84 00 0C */	addi r4, r4, 0xc
-/* 801DF394 001DAFF4  42 00 FF 90 */	bdnz lbl_801DF324
-/* 801DF398 001DAFF8  C0 5F 01 08 */	lfs f2, 0x108(r31)
-/* 801DF39C 001DAFFC  C0 C2 96 54 */	lfs f6, lbl_80641C54
-/* 801DF3A0 001DB000  C0 3F 01 0C */	lfs f1, 0x10c(r31)
-/* 801DF3A4 001DB004  EC A2 30 28 */	fsubs f5, f2, f6
-/* 801DF3A8 001DB008  C0 1F 01 10 */	lfs f0, 0x110(r31)
-/* 801DF3AC 001DB00C  EC 81 30 28 */	fsubs f4, f1, f6
-/* 801DF3B0 001DB010  C0 5F 01 14 */	lfs f2, 0x114(r31)
-/* 801DF3B4 001DB014  EC 60 30 28 */	fsubs f3, f0, f6
-/* 801DF3B8 001DB018  C0 3F 01 18 */	lfs f1, 0x118(r31)
-/* 801DF3BC 001DB01C  C0 1F 01 1C */	lfs f0, 0x11c(r31)
-/* 801DF3C0 001DB020  EC 42 30 2A */	fadds f2, f2, f6
-/* 801DF3C4 001DB024  EC 21 30 2A */	fadds f1, f1, f6
-/* 801DF3C8 001DB028  D0 BF 01 08 */	stfs f5, 0x108(r31)
-/* 801DF3CC 001DB02C  EC 00 30 2A */	fadds f0, f0, f6
-/* 801DF3D0 001DB030  D0 9F 01 0C */	stfs f4, 0x10c(r31)
-/* 801DF3D4 001DB034  D0 7F 01 10 */	stfs f3, 0x110(r31)
-/* 801DF3D8 001DB038  D0 5F 01 14 */	stfs f2, 0x114(r31)
-/* 801DF3DC 001DB03C  D0 3F 01 18 */	stfs f1, 0x118(r31)
-/* 801DF3E0 001DB040  D0 1F 01 1C */	stfs f0, 0x11c(r31)
-/* 801DF3E4 001DB044  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 801DF3E8 001DB048  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 801DF3EC 001DB04C  7C 08 03 A6 */	mtlr r0
-/* 801DF3F0 001DB050  38 21 00 10 */	addi r1, r1, 0x10
-/* 801DF3F4 001DB054  4E 80 00 20 */	blr
-}
-#pragma peephole on 
-#endif // NONMATCHING_801DF2CC
+        f1 = r4->x;
+        if (unk108.x > f1)
+            unk108.x = f1;
+        if (unk114.x < f1)
+            unk114.x = f1;
 
-void PSVECScale(const Vec* src, Vec* dst, float scale);
-#define VECScale PSVECScale
+        f1 = r4->y;
+        if (unk108.y > f1)
+            unk108.y = f1;
+        if (unk114.y < f1)
+            unk114.y = f1;
+        
+        f1 = r4->z;
+        if (unk108.z > f1)
+            unk108.z = f1;
+        if (unk114.z < f1)
+            unk114.z = f1;
+    }
+    unk108.x -= 5.0e-6f;
+    unk108.y -= 5.0e-6f;
+    unk108.z -= 5.0e-6f;
+    unk114.x += 5.0e-6f;
+    unk114.y += 5.0e-6f;
+    unk114.z += 5.0e-6f;
+}
 
 // private
 void GSvolume::func_801DF3F8(const Mtx mtxA, const Mtx mtxB, u32 p4, u32 p5, Vec* v, const Vec* w) const
@@ -504,9 +418,6 @@ void GSvolume::func_801DF528()
         }
     }
 }
-
-float PSVECMag(const Vec* v);
-#define VECMag PSVECMag
 
 // modifies the Vec at unk140[unk144->unk40->unk0] to the scaled 
 // cross product of two difference vectors
@@ -763,11 +674,12 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2)
     
     r30 = p1->unk3; // loop counter... must be > 0
     r31 = p1->unk4; // start ptr
-    u16* r4 = &r31[r30 - 1]; // end ptr
+    
+    u16* r4 = &r31[r30-1]; // end ptr
     gUnkClass14* r3 = &unk13C[*r4];
+    BOOL r5;
     if (st == Ymax) {
-        BOOL r5 = (p2->x >= r3->x);
-        // TODO: inline function?
+        r5 = (p2->x >= r3->x);
         do {
             BOOL r26, r0;
             gUnkClass14* r25 = &unk13C[*r31];
@@ -787,12 +699,12 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2)
             r31++;
         } while (--r30);
     } else if (st == Zmax) {
-        BOOL r5 = (p2->y >= r3->y);
+        r5 = (p2->y >= r3->y);
         do {
             BOOL r26, r0;
-            gUnkClass14* r25 = &unk13C[*r31]; // r26
+            gUnkClass14* r25 = &unk13C[*r31];
             r3 = &unk13C[*r4]; 
-            r26 = (p2->y >= r25->y); // r25
+            r26 = (p2->y >= r25->y);
             if (r5 != r26) {
                 VECSubtract(r3, r25, &sp2C);
                 sp5C = sp2C;
@@ -807,18 +719,18 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2)
             r31++;
         } while (--r30);
     } else { // st == Xmax
-        BOOL r5 = (p2->z >= r3->z);
+        r5 = (p2->z >= r3->z);
         do {
-            BOOL r26;
-            gUnkClass14* r25 = &unk13C[*r31]; // r26
+            BOOL r26, r0;
+            gUnkClass14* r25 = &unk13C[*r31];
             r3 = &unk13C[*r4]; 
-            r26 = (p2->z >= r25->z); // r25
+            r26 = (p2->z >= r25->z);
             if (r5 != r26) {
                 VECSubtract(r3, r25, &sp14);
                 sp5C = sp14;
                 VECSubtract(r25, p2, &sp8);
                 sp50 = sp8;
-                BOOL r0 = (sp50.z * sp5C.y >= sp50.y * sp5C.z);
+                r0 = (sp50.z * sp5C.y >= sp50.y * sp5C.z);
                 if (r26 == r0)
                     r29 = !r29; // toggle
             }
@@ -876,11 +788,9 @@ BOOL GSvolume::func_801E0404(Vec* p1, Vec* p2, Vec* p3, Vec* p4, float* p5, BOOL
     BOOL r31 = FALSE;
     *p5 = 1.0f;
     unkClass8* r30 = unk144->unk40;
-    u16 r29 = unk144->unk34; // count, u16
-    u16 r28 = 0; // same as r30?
-    gUnkClass14* r20;
-    for ( ; r28 < r29; r28++, r30++) {
-        r20 = &unk13C[r30->unk4[0]];
+    u16 r29 = unk144->unk34; // count, u16    
+    for (u16 r28 = 0; r28 < r29; r28++, r30++) {
+        gUnkClass14* r20 = &unk13C[r30->unk4[0]];
         sp68 = unk140[r30->unk0];
         // TODO: How can a Vec* be cast to a Quaternion* if they have 
         // different sizes?
