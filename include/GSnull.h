@@ -68,6 +68,7 @@ public:
     GSnull(void* p1, gUnkClass10* p2); // 801F1BC8 // TODO: p1 type
     void func_801F3904(float);
     BOOL func_801F3C7C();
+    BOOL func_801F3CE0();
     virtual ~GSnull();    // 801F1F24
     virtual void func1(float p1); // 801F3960
     virtual void func2(BOOL p1); // 801F39E8

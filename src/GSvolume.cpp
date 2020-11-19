@@ -12,7 +12,7 @@ namespace
     
     struct unkClass4
     {
-        u16 unk0;
+        u16 unk0; // index into unk13C
         u16 unk2;
         u16 unk4;
     };
@@ -25,13 +25,7 @@ namespace
         u16 unk6;
         u16 unk8;
     };
-    
-    struct unkClass6
-    {
-        u16 unk0; // index into an array of gUnkClass14 (Vec)
-        unkClass4* unk4;
-    };
-    
+
     // configure quantization of float -> s16
     struct unkClass7
     {
@@ -50,7 +44,7 @@ namespace
     struct unkClass8
     {
         u16 unk0; // index into unk140 of GSvolume
-        u8 unk2[0x1]; // pad
+        u8 unk2; // used in GSvolume::func_801E0404
         u8 unk3; // loop counter in GSvolume::func_801E0058
         u16* unk4; // points into an array of indices into unk13C of GSvolume
     };
@@ -69,8 +63,8 @@ namespace
 
     struct unkClass3
     {
-        Vec unk0;
-        Vec unkC;
+        Vec unk0; // upper bound?
+        Vec unkC; // lower bound?
         MtxPtr unk18;
     };
 }
@@ -94,10 +88,10 @@ struct gUnkClass10_2 : public gUnkClass10
     u8 unk4[0x2C]; // pad
     u16 unk30;
     u16 unk32;
-    u16 unk34;
+    u16 unk34; // array size
     gUnkClass14* unk38;
     gUnkClass14* unk3C;
-    unkClass6* unk40;
+    unkClass8* unk40;
     u8 unk44[0x4]; // pad
     
     u16 unk48;
@@ -132,7 +126,8 @@ public:
     void func_801DF85C();
     void func_801DF9D4(u32 p1, BOOL p2, float p3);
     void func_801DFFFC();
-    BOOL func_801E0058(unkClass8* p1, gUnkClass14* p2);
+    BOOL func_801E0404(Vec* p1, Vec* p2, Vec* p3, Vec* p4, float* p5, BOOL p6);
+    BOOL func_801E0058(unkClass8* p1, Vec* p2);
     virtual ~GSvolume(); // 801DF204
     virtual void func1(float p1); // 801DFD90
 };
@@ -526,13 +521,13 @@ void GSvolume::func_801DF85C()
     gUnkClass10_2* r4 = unk144;
     if (unk140 != r4->unk3C) {
         u16 r30 = r4->unk34;
-        unkClass6* r29 = r4->unk40;
+        unkClass8* r29 = r4->unk40;
         for (u16 r28 = 0; r28 < r30; r28++, r29++) {
-            unkClass4* r7 = r29->unk4;
+            u16* r7 = r29->unk4;
             gUnkClass14* r27 = &unk140[r29->unk0];
-            gUnkClass14* r26 = &unk13C[r7->unk0];
-            gUnkClass14* r25 = &unk13C[r7->unk4];
-            VECSubtract(&unk13C[r7->unk2], r26, &sp20);
+            gUnkClass14* r26 = &unk13C[r7[0]];
+            gUnkClass14* r25 = &unk13C[r7[2]];
+            VECSubtract(&unk13C[r7[1]], r26, &sp20);
             VECSubtract(r25, r26, &sp14);
             VECCrossProduct(&sp20, &sp14, &sp8);
             *r27 = sp8;
@@ -728,7 +723,7 @@ void GSvolume::func_801DFFFC()
 // NONMATCHING: r3/r0 regswap at the beginning of each do loop, and instruction misordering only
 // at the beginning of the first loop
 // private
-BOOL GSvolume::func_801E0058(unkClass8* p1, gUnkClass14* p2)
+BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2)
 {
     Vec sp5C;
     Vec sp50;
@@ -746,28 +741,31 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, gUnkClass14* p2)
     gUnkClass14* r6 = &unk140[p1->unk0]; // u16 index
     r29 = FALSE;
     
-    float f1 = (r6->x > 0.0f) ? r6->x : -r6->x;
-    float f2 = (r6->y > 0.0f) ? r6->y : -r6->y;
-    float f3 = (r6->z > 0.0f) ? r6->z : -r6->z;
+    // Determine component with the largest absolute value
+
+    float absX = (r6->x > 0.0f) ? r6->x : -r6->x;
+    float absY = (r6->y > 0.0f) ? r6->y : -r6->y;
+    float absZ = (r6->z > 0.0f) ? r6->z : -r6->z;
     
-    s32 state; // r6
-    if (f1 > f2) {
-        if (f1 > f3) {
-            state = 0;
+    enum { Xmax, Ymax, Zmax };
+    s32 st; // r6
+    if (absX > absY) {
+        if (absX > absZ) {
+            st = Xmax;
         } else {
-            state = 2;
+            st = Zmax;
         }
-    } else if (f2 > f3) {
-        state = 1;
+    } else if (absY > absZ) {
+        st = Ymax;
     } else {
-        state = 2;
+        st = Zmax;
     }
     
     r30 = p1->unk3; // loop counter... must be > 0
     r31 = p1->unk4; // start ptr
     u16* r4 = &r31[r30 - 1]; // end ptr
     gUnkClass14* r3 = &unk13C[*r4];
-    if (state == 1) {
+    if (st == Ymax) {
         BOOL r5 = (p2->x >= r3->x);
         // TODO: inline function?
         do {
@@ -788,7 +786,7 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, gUnkClass14* p2)
             r5 = r26;
             r31++;
         } while (--r30);
-    } else if (state == 2) {
+    } else if (st == Zmax) {
         BOOL r5 = (p2->y >= r3->y);
         do {
             BOOL r26, r0;
@@ -808,7 +806,7 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, gUnkClass14* p2)
             r5 = r26;
             r31++;
         } while (--r30);
-    } else {
+    } else { // st == Xmax
         BOOL r5 = (p2->z >= r3->z);
         do {
             BOOL r26;
@@ -831,6 +829,98 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, gUnkClass14* p2)
     }
     return r29;
 }
+
+BOOL GSvolume::func_801E0404(Vec* p1, Vec* p2, Vec* p3, Vec* p4, float* p5, BOOL p6)
+{
+    Mtx sp98;
+    Vec sp8C;
+    Vec sp80;
+    Vec sp74;
+    Vec sp68;
+    Vec sp5C;
+    Vec sp50;
+    Vec sp44;
+    Vec sp38;
+    Vec sp2C;
+    Vec sp20;
+    Vec sp14;
+    Vec sp8;
+    
+    if (!func_801F3CE0())
+        return FALSE;
+    if (!unk13C || !unk140)
+        return FALSE;
+    MTXInverse(unkD0, sp98);
+    MTXMultVec(sp98, p1, &sp8C);
+    MTXMultVec(sp98, p2, &sp80);
+    
+    // Some kind of bounds check
+    if (sp80.x < unk120.unk0.x && sp8C.x < unk120.unk0.x)
+        return FALSE;
+    if (sp80.y < unk120.unk0.y && sp8C.y < unk120.unk0.y)
+        return FALSE;
+    if (sp80.z < unk120.unk0.z && sp8C.z < unk120.unk0.z)
+        return FALSE;
+    if (sp80.x > unk120.unkC.x && sp8C.x > unk120.unkC.x)
+        return FALSE;
+    if (sp80.y > unk120.unkC.y && sp8C.y > unk120.unkC.y)
+        return FALSE;
+    if (sp80.z > unk120.unkC.z && sp8C.z > unk120.unkC.z)
+        return FALSE;
+    
+    if (unk106 & 0x10)
+        func_801DFFFC();
+    
+    VECSubtract(&sp80, &sp8C, &sp74);
+    
+    BOOL r31 = FALSE;
+    *p5 = 1.0f;
+    unkClass8* r30 = unk144->unk40;
+    u16 r29 = unk144->unk34; // count, u16
+    u16 r28 = 0; // same as r30?
+    gUnkClass14* r20;
+    for ( ; r28 < r29; r28++, r30++) {
+        r20 = &unk13C[r30->unk4[0]];
+        sp68 = unk140[r30->unk0];
+        // TODO: How can a Vec* be cast to a Quaternion* if they have 
+        // different sizes?
+        float f30 = QUATDotProduct((Quaternion*)&sp74, (Quaternion*)&sp68);
+        if (f30 >= 0.0f) {
+            if (!r30->unk2)
+                continue;
+            f30 = -f30;
+            sp68.x = -sp68.x;
+            sp68.y = -sp68.y;
+            sp68.z = -sp68.z;
+        }
+        VECSubtract(r20, &sp8C, &sp50);
+        float f1 = QUATDotProduct((Quaternion*)&sp50, (Quaternion*)&sp68);
+        if (f1 > 0.0f || f1 <= f30)
+            continue;
+        f30 = f1 / f30;
+        VECScale(&sp74, &sp38, f30);
+        VECAdd(&sp8C, &sp38, &sp44);
+        sp5C = sp44;
+        if (func_801E0058(r30, &sp5C) && *p5 > f30) {
+            VECSubtract(p2, p1, &sp14);
+            VECScale(&sp14, &sp20, f30);
+            VECAdd(p1, &sp20, &sp2C);
+            *p4 = sp2C;
+            *p3 = sp68;
+            MTXMultVecSR(unkD0, p3, p3);
+            VECNormalize(p3, p3);
+            VECScale(p3, &sp8, 0.001f);
+            VECAdd(p4, &sp8, p4);
+            *p5 = f30;
+            r31 = TRUE;
+            if (!p6)
+                break;
+        }
+    }
+    return r31;
+}
+
+
 
 
 

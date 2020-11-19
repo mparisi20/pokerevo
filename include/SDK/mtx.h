@@ -34,6 +34,7 @@ u32 PSMTXInverse(const Mtx src, Mtx inv);
 void PSMTXConcat(const Mtx a, const Mtx b, Mtx ab);
 void PSMTXQuat(Mtx m, const Quaternion* q);
 void C_QUATRotAxisRad(Quaternion* r, const Vec* axis, float rad);
+float PSQUATDotProduct(const Quaternion* p, const Quaternion* q);
 void PSMTXScale(Mtx m, float xS, float yS, float zS);
 void PSMTXIdentity(Mtx m);
 void PSVECAdd(const Vec* a, const Vec* b, Vec* ab);
@@ -51,6 +52,7 @@ void PSVECSubtract(const Vec* a, const Vec* b, Vec* a_b);
 #define MTXConcat PSMTXConcat  
 #define MTXQuat PSMTXQuat
 #define QUATRotAxisRad C_QUATRotAxisRad
+#define QUATDotProduct PSQUATDotProduct
 #define VECSubtract PSVECSubtract
 #define VECCrossProduct PSVECCrossProduct
 #define VECNormalize PSVECNormalize
