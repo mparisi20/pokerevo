@@ -231,7 +231,6 @@ SPLIT_O_FILES := 						                          \
 	$(BUILD_DIR)/src/code_801DD8C0.o                                   \
 	$(BUILD_DIR)/src/GScamera.o                                   \
 	$(BUILD_DIR)/src/GSvolume.o                                   \
-	$(BUILD_DIR)/asm/GSvolume_asm.o                                   \
 	$(BUILD_DIR)/asm/code_801E07E8.o                                   \
 	$(BUILD_DIR)/asm/code_801E0810.o                                   \
 	$(BUILD_DIR)/asm/code_801E0A54.o                                   \

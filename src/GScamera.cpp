@@ -8,7 +8,7 @@
 #include "GScamera.h"
 
 static ctorStruct gUnk8063F358(1, 4, 0);
-
+ 
 // TODO: determine defining modules for these external references
 extern Vec lbl_80493614;
 extern Vec lbl_80493620;
