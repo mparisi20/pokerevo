@@ -79,8 +79,8 @@ GScamera::GScamera() : GSnull(4)
     unk17C.z = f2;
     
     MTXIdentity(modelview);
-    MTXIdentity(unk204);
-    MTXIdentity(unk234);
+    MTXIdentity(modelviewInv);
+    MTXIdentity(modelviewInvT);
 }
 
 GScamera::GScamera(void* p1, gUnkClass10* p2) : GSnull(p1, p2)
@@ -141,8 +141,8 @@ GScamera::GScamera(void* p1, gUnkClass10* p2) : GSnull(p1, p2)
     unk17C.z = f2;
 
     MTXIdentity(modelview);
-    MTXIdentity(unk204);
-    MTXIdentity(unk234);
+    MTXIdentity(modelviewInv);
+    MTXIdentity(modelviewInvT);
 }
 
 GScamera::~GScamera() { }
@@ -230,24 +230,23 @@ void GScamera::func_801DE1F8()
     }
 }
 
-// if state flag 4 is set, 
-// make camUp orthogonal to the displacement between the target and camera
-// then clear flag 4 and set flag 5
+// make camUp orthogonal to the line of sight from the camera to the target
+// NOTE: Same process as MTXLookAt direction vector computation
 void GScamera::func_801DE524()
 {
-    Vec unitDisp;
-    Vec unitCross;
-    Vec disp;
-    Vec cross;
-    Vec orthoCamUp;
+    Vec nLook; 
+    Vec nRight; 
+    Vec look; // line-of-sight vector
+    Vec right; // right of line-of-sight
+    Vec orthoCamUp; // up from line-of-sight
     if (unk104 & 0x10) {
-        VECSubtract(&targetPos, &camPos, &disp);
-        unitDisp = disp;
-        VECNormalize(&unitDisp, &unitDisp);
-        VECCrossProduct(&unitDisp, &camUp, &cross);
-        unitCross = cross;
-        VECNormalize(&unitCross, &unitCross);
-        VECCrossProduct(&unitCross, &unitDisp, &orthoCamUp);
+        VECSubtract(&targetPos, &camPos, &look);
+        nLook = look;
+        VECNormalize(&nLook, &nLook);
+        VECCrossProduct(&nLook, &camUp, &right);
+        nRight = right;
+        VECNormalize(&nRight, &nRight);
+        VECCrossProduct(&nRight, &nLook, &orthoCamUp);
         camUp = orthoCamUp;
         unk104 = (unk104 & ~0x10) | 0x20;
     }
@@ -265,7 +264,7 @@ static inline BOOL IsZeroVector(const Vec& v)
     return TRUE;
 }
 
-static inline BOOL AreVectorsEqual(const Vec& a, const Vec& b)
+static inline BOOL IsEqual(const Vec& a, const Vec& b)
 {
     if (!((a.x - b.x) < 0.00001f && (a.x - b.x) > -0.00001f &&
           (a.y - b.y) < 0.00001f && (a.y - b.y) > -0.00001f &&
@@ -276,15 +275,16 @@ static inline BOOL AreVectorsEqual(const Vec& a, const Vec& b)
     return TRUE;
 }
 
+// Seems to be updating targetPos
 void GScamera::func3()
 {
     Mtx sp110;
     Mtx spE0;
     Mtx spB0;
-    Vec normDisp;
-    Vec sp98;
+    Vec nLook;
+    Vec right;
     Vec sp8C;
-    Vec disp;
+    Vec look;
     Vec sp74;
     Vec sp68;
     Vec sp5C;
@@ -301,25 +301,30 @@ void GScamera::func3()
         if ((unk1D0->unk10 & 0x1) == 0x1)
             unk1D0->func3();
         
+        // update targetPos
         sp8C.x = unk1D0->unkD0[0][3];
         sp8C.y = unk1D0->unkD0[1][3];
         sp8C.z = unk1D0->unkD0[2][3];
                 
         targetPos = sp8C;
         
-        VECSubtract(&targetPos, &camPos, &disp);
-        normDisp = disp;
-        VECNormalize(&normDisp, &normDisp);
-        VECCrossProduct(&normDisp, &GSjHat, &sp74);
-        sp98 = sp74;
+        // orthogonalize <0,1,0> based on new line-of-sight
+        VECSubtract(&targetPos, &camPos, &look);
+        nLook = look;
+        VECNormalize(&nLook, &nLook);
+        VECCrossProduct(&nLook, &GSjHat, &sp74);
+        right = sp74;
         
-        if (IsZeroVector(sp98)) {
-            VECCrossProduct(&normDisp, &GSkHat, &sp68);
-            sp98 = sp68;
+        // if the line-of-sight points along the <0,1,0> line, 
+        // orthogonalize <0,0,1> instead
+        if (IsZeroVector(right)) {
+            VECCrossProduct(&nLook, &GSkHat, &sp68);
+            right = sp68;
         }
-        // TODO: possibly inlined. Same code in func_801DE524
-        VECNormalize(&sp98, &sp98);
-        VECCrossProduct(&sp98, &normDisp, &sp5C);
+        
+        // assign result to camUp
+        VECNormalize(&right, &right);
+        VECCrossProduct(&right, &nLook, &sp5C);
         camUp = sp5C;
         unk104 = (unk104 & ~0x10) | 0x20;
     }
@@ -340,7 +345,7 @@ void GScamera::func3()
             GSnull::func3();
         
         MTXMultVec(unkD0, &unk188, &sp2C);
-        camPos = sp2C;
+        camPos = sp2C; // same as original value
         MTXMultVecSR(unkD0, &unk194, &sp20);
         camUp = sp20;
         MTXMultVec(unkD0, &unk1A0, &sp14);
@@ -349,16 +354,16 @@ void GScamera::func3()
         if (IsZeroVector(camUp))
             camUp = GSjHat;
         
-        if (AreVectorsEqual(camPos, targetPos)) {
+        if (IsEqual(camPos, targetPos)) {
             VECAdd(&camPos, &GSkHat, &sp8);
             targetPos = sp8;
         }
         
         MTXLookAt(modelview, &camPos, &camUp, &targetPos);
         MTXInverse(modelview, spE0);
-        MTXCopy(spE0, unk204);
-        MTXTranspose(unk204, spB0);
-        MTXCopy(spB0, unk234);
+        MTXCopy(spE0, modelviewInv);
+        MTXTranspose(modelviewInv, spB0);
+        MTXCopy(spB0, modelviewInvT);
         unk104 &= ~0x20;
     }
 }
@@ -419,7 +424,7 @@ void func_801DEA3C(Mtx p1, GScamera* p2, Mtx p3, BOOL p4)
             MTXConcat(sp40, sp70, sp70);
         }
     } else {
-        MTXConcat(p2->unk204, sp70, sp70);
+        MTXConcat(p2->modelviewInv, sp70, sp70);
     }
     sp70[0][3] = sp30.x;
     sp70[1][3] = sp30.y;

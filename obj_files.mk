@@ -240,7 +240,7 @@ SPLIT_O_FILES := 						                          \
 	$(BUILD_DIR)/asm/code_801E6BF8.o                                   \
 	$(BUILD_DIR)/asm/code_801ED3F0.o                                   \
 	$(BUILD_DIR)/asm/code_801EE044.o                                   \
-	$(BUILD_DIR)/asm/code_801F1AE8.o                                   \
+	$(BUILD_DIR)/asm/GSnull.o                                   \
 	$(BUILD_DIR)/asm/code_801F40E0.o                                   \
 	$(BUILD_DIR)/asm/code_801F98EC.o                                   \
 	$(BUILD_DIR)/asm/code_801FA094.o                                   \

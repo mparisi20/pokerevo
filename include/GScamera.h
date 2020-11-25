@@ -8,7 +8,7 @@ class GScamera : public GSnull
 {
     u32 unk104; // flags
     gUnkClass10* unk108;
-    Mtx44 unk10C; // orthographic projection matrix. TODO: this could be a C++ wrapper for Mtx44
+    Mtx44 unk10C; // orthographic OR perspective projection matrix. TODO: this could be a C++ wrapper for Mtx44
     
     // TODO: Is unk14C~unk164 an array of floats initialized to 0s with an initializer list?
     // NOTE: This hack is only needed because GScamera's constructors write 0 to unk14C~unk164 
@@ -27,7 +27,7 @@ class GScamera : public GSnull
     s32float unk160;
     s32float unk164;
     
-    // view volume coordinates for the orthographic projection matrix
+    // view volume coordinates for the projection matrix
     float unk168; // top
     float unk16C; // bottom
     float unk170; // left
@@ -44,8 +44,8 @@ class GScamera : public GSnull
     Point3d targetPos; // target posiiton
     GScamera* unk1D0;
     Mtx modelview; // modelview matrix
-    Mtx unk204; // inverse of the modelview matrix
-    Mtx unk234; // inverse-transpose of the modelview matrix
+    Mtx modelviewInv; // inverse of the modelview matrix
+    Mtx modelviewInvT; // inverse-transpose of the modelview matrix
 public:
     GScamera(); // 801DDF78
     GScamera(void* p1, gUnkClass10* p2); // 801DE084
