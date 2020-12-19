@@ -2,6 +2,7 @@
 
 .section .text, "ax"  # 0x80006980 - 0x803E1E60
 
+# GSjoint ctor
 .global func_801E4360
 func_801E4360:
 /* 801E4360 001DFFC0  94 21 FF F0 */	stwu r1, -0x10(r1)
@@ -39,6 +40,9 @@ func_801E4360:
 /* 801E43E0 001E0040  7C 08 03 A6 */	mtlr r0
 /* 801E43E4 001E0044  38 21 00 10 */	addi r1, r1, 0x10
 /* 801E43E8 001E0048  4E 80 00 20 */	blr
+
+# GSjoint virtual func3
+func_801E43EC:
 /* 801E43EC 001E004C  94 21 FF 30 */	stwu r1, -0xd0(r1)
 /* 801E43F0 001E0050  7C 08 02 A6 */	mflr r0
 /* 801E43F4 001E0054  90 01 00 D4 */	stw r0, 0xd4(r1)
@@ -216,6 +220,9 @@ lbl_801E4654:
 /* 801E4660 001E02C0  7C 08 03 A6 */	mtlr r0
 /* 801E4664 001E02C4  38 21 00 D0 */	addi r1, r1, 0xd0
 /* 801E4668 001E02C8  4E 80 00 20 */	blr
+
+# GSjoint virtual func2
+func_801E466C:
 /* 801E466C 001E02CC  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 801E4670 001E02D0  7C 08 02 A6 */	mflr r0
 /* 801E4674 001E02D4  90 01 00 14 */	stw r0, 0x14(r1)
@@ -242,6 +249,9 @@ lbl_801E46BC:
 /* 801E46C4 001E0324  7C 08 03 A6 */	mtlr r0
 /* 801E46C8 001E0328  38 21 00 10 */	addi r1, r1, 0x10
 /* 801E46CC 001E032C  4E 80 00 20 */	blr
+
+# GSjoint virtual dtor
+func_801E46D0:
 /* 801E46D0 001E0330  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 801E46D4 001E0334  7C 08 02 A6 */	mflr r0
 /* 801E46D8 001E0338  2C 03 00 00 */	cmpwi r3, 0

@@ -235,14 +235,15 @@ SPLIT_O_FILES := 						                          \
 	$(BUILD_DIR)/asm/GSvolume_sbss.o                                   \
 	$(BUILD_DIR)/src/code_801E07E8.o                                   \
 	$(BUILD_DIR)/src/gUnkClass20.o                                   \
-	$(BUILD_DIR)/asm/code_801E0A54.o                                   \
-	$(BUILD_DIR)/asm/code_801E4360.o                                   \
-	$(BUILD_DIR)/asm/code_801E474C.o                                   \
-	$(BUILD_DIR)/asm/code_801E5F7C.o                                   \
-	$(BUILD_DIR)/asm/code_801E6BF8.o                                   \
-	$(BUILD_DIR)/asm/code_801ED3F0.o                                   \
-	$(BUILD_DIR)/asm/code_801EE044.o                                   \
-	$(BUILD_DIR)/asm/code_801F1AE8.o                                   \
+	$(BUILD_DIR)/src/code_801E0A54.o                                   \
+	$(BUILD_DIR)/asm/code_801E0A54_asm.o                                   \
+	$(BUILD_DIR)/asm/GSjoint.o                                   \
+	$(BUILD_DIR)/asm/GSlensFlare.o                                   \
+	$(BUILD_DIR)/asm/GSlight.o                                   \
+	$(BUILD_DIR)/asm/GSmaterial.o                                   \
+	$(BUILD_DIR)/asm/GSmesh.o                                   \
+	$(BUILD_DIR)/asm/GSmodel.o                                   \
+	$(BUILD_DIR)/asm/GSnull.o                                   \
 	$(BUILD_DIR)/asm/code_801F40E0.o                                   \
 	$(BUILD_DIR)/asm/code_801F98EC.o                                   \
 	$(BUILD_DIR)/asm/code_801FA094.o                                   \
