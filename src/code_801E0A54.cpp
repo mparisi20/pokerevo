@@ -1,5 +1,6 @@
 #include "ctorStruct.h"
 #include <SDK/mtx.h>
+#include <string.h>
 
 // TODO: class member functions
 
@@ -24,6 +25,7 @@ struct gUnkClass23
 
 // TODO: same as gUnkClass9?
 // "gUnkClass22"
+// size == 0x10
 struct gUnkClass12
 {
     u8 unk0;
@@ -262,7 +264,7 @@ void func_801E0A60(gUnkClass12* p1, ctorStruct*, u32 p3)
 }
 
 // private
-void func_801E10BC(void)
+void func_801E10BC(gUnkClass12*)
 {
     
 }
@@ -410,13 +412,277 @@ void func_801E1440(gUnkClass12* p1, Vec4U8* p2, float p3)
             break;
     }
 }
-
 void func_801E1504(gUnkClass12* p1, u8* p2, float p3)
 {
     *p2 = func_80222B80(p1->unk8, p1->unk7, p3);
 }
 
-// void func_801E1540() { }
+// TODO: relationship with gUnkClass23
+struct gUnkClass25
+{
+    u8 pad0[2];
+    u16 unk2; // array element count
+    gUnkClass12* unk4; // ptr to array
+    u8 pad8[4];
+    gUnkClass25* unkC; // ptr to next node in linked list
+};
+
+
+// private? unless file splits further
+void func_801E1540(gUnkClass25* p1, ctorStruct* p2, u32 p3) 
+{
+    if (p3 && p1->unk4 && (u32)p1->unk4 < 0x80000000)
+        p1->unk4 = (gUnkClass12*)((u32)p1->unk4 + p3);
+    
+    gUnkClass12* r31;
+    u16 i;
+    for (r31 = p1->unk4, i = 0; i < p1->unk2; i++, r31++)
+        func_801E0A60(r31, p2, p3);
+    
+    if (p3 && p1->unkC && (u32)p1->unkC < 0x80000000)
+        p1->unkC = (gUnkClass25*)((u32)p1->unkC + p3);
+    
+    if (p1->unkC)
+        func_801E1540(p1->unkC, p2, p3);
+}
+
+// private?
+// performs no-ops for each array element of each linked list node
+void func_801E1614(gUnkClass25* p1)
+{
+    if (p1->unkC)
+        func_801E1614(p1->unkC);
+    
+    gUnkClass12* r31;
+    u16 i;
+    for (r31 = p1->unk4, i = 0; i < p1->unk2; i++, r31++)
+        func_801E10BC(r31);
+}
+
+// size == 0x1C
+struct gUnkClass26
+{
+    u8 unk0;
+    u8 unk1;
+    u8 unk2;
+    u8 unk3;
+    u8 unk4;
+    u8 unk5;
+    u8 unk6;
+    u8 unk7;
+    u8 unk8;
+    u8 unk9;
+    u8 unkA;
+    u8 unkB;
+    u8 padC[3];
+    u8 unkF;
+    u8 pad10;
+    u8 unk11;
+    u8 unk12;
+    u8 unk13;
+    u32 unk14;
+    char* unk18; // TODO: determine type. linked list next ptr, as in gUnkClass25?
+};
+
+// constructor for gUnkClass26
+void func_801E168C(gUnkClass26* p1, BOOL p2)
+{
+    p1->unk4 = 1;
+    p1->unk5 = 1;
+    p1->unk6 = 1;
+    p1->unk7 = 1;
+    p1->unk8 = 3;
+    p1->unk9 = 0;
+    p1->unkA = 7;
+    p1->unkB = 0;
+    p1->unkF = 2;
+    p1->unk11 = 0;
+    p1->unk12 = 0xFF;
+    p1->unk13 = 0;
+    p1->unk14 = 0;
+    p1->unk18 = 0;
+    if (p2) {
+        p1->unk0 = 1;
+        p1->unk1 = 4;
+        p1->unk2 = 5;
+    } else {
+        p1->unk0 = 0;
+        p1->unk1 = 1;
+        p1->unk2 = 0;
+    }
+    p1->unk3 = 5;
+}
+
+// private?
+void func_801E1714(gUnkClass26* p1, void*, u32 p3)
+{
+    if (p3 && p1->unk18 && (u32)p1->unk18 < 0x80000000)
+        p1->unk18 = (char*)((u32)p1->unk18 + p3);
+}
+
+// private?
+void func_801E1740(gUnkClass26*)
+{
+    
+}
+
+struct gUnkClass27
+{
+    u32 unk0;
+    u8 unk4[8];
+    u8 unkC;
+    u8 unkD;
+    u8 unkE;
+    u8 unkF;
+    u8 unk10;
+    u8 unk11;
+    u8 unk12;
+    u8 unk13;
+    u8 unk14;
+    u8 unk15;
+    u8 unk16;
+    u8 unk17;
+    
+    u32 unk18;
+    u32 unk1C;
+    u32 unk20;
+    u32 unk24;
+    u32 unk28;
+    
+    u32 unk2C;
+    u32 unk30;
+    u32 unk34;
+    u32 unk38;
+    u32 unk3C;
+    
+    u32 unk40;
+    u32 unk44;
+    u32 unk48;
+    u32 unk4C;
+    
+    u32 unk50;
+    u8 unk54;
+    u8 pad55[3];
+    u8 unk58;
+    u8 unk59;
+    u8 unk5A;
+    u8 unk5B;
+    u8 unk5C;
+    u8 unk5D;
+    u8 unk5E;
+    u8 unk5F;
+    u8 unk60;
+    u8 unk61;
+    u8 unk62;
+    u8 unk63;
+    u8 unk64;
+    u8 unk65;
+    u8 unk66;
+    u8 unk67;
+    float unk68;
+    s8 unk6C;
+    u8 unk6D;
+    s8 unk6E;
+    u8 unk6F;
+    u8 unk70;
+    u8 unk71;
+    u8 unk72;
+    u8 unk73;
+    s8 unk74;
+    u8 unk75;
+    s8 unk76;
+    s8 unk77;
+    u8 unk78;
+    u8 unk79;
+    u8 unk7A;
+    u8 unk7B;
+    float unk7C;
+    u8 unk80;
+    u8 unk81;
+    u8 unk82;
+    u8 unk83;
+    u32 unk84;
+    u32 unk88;
+};
+
+// constructor for gUnkClass27
+gUnkClass27* func_801E1744(gUnkClass27* p1)
+{
+    p1->unk0 = 0;
+    p1->unk18 = 0;
+    p1->unk1C = 0;
+    p1->unk20 = 0;
+    p1->unk24 = 0;
+    p1->unk28 = 0;
+    p1->unk2C = 0;
+    p1->unk30 = 0;
+    p1->unk34 = 0;
+    p1->unk38 = 0;
+    p1->unk3C = 0;
+    p1->unk40 = 0;
+    p1->unk44 = 0;
+    p1->unk48 = 0;
+    p1->unk4C = 0;
+    p1->unk50 = 0;
+    p1->unk54 = 0;
+    p1->unk58 = 0;
+    p1->unk59 = 0;
+    p1->unk5A = 0;
+    p1->unk5B = 0;
+    p1->unk5C = 0;
+    p1->unk5D = 1;
+    p1->unk5E = 0;
+    p1->unk5F = 0;
+    p1->unk60 = 0;
+    p1->unk61 = 0;
+    p1->unk62 = 0;
+    p1->unk63 = 0;
+    p1->unk64 = 0x80;
+    p1->unk65 = 0x80;
+    p1->unk66 = 0x80;
+    p1->unk67 = 0xFF;
+    p1->unk68 = 0.0f;
+    p1->unk6C = -1;
+    p1->unk6D = 0;
+    p1->unk6E = -1;
+    p1->unk6F = 0;
+    p1->unk70 = 0;
+    p1->unk71 = 0;
+    p1->unk72 = 0;
+    p1->unk73 = 0;
+    p1->unk74 = -1;
+    p1->unk75 = 0;
+    p1->unk76 = -1;
+    p1->unk77 = -1;
+    p1->unk78 = 0;
+    p1->unk79 = 0;
+    p1->unk7A = 0;
+    p1->unk7B = 0;
+    p1->unk7C = 50.0f;
+    p1->unk80 = 0xFF;
+    p1->unk81 = 0xFF;
+    p1->unk82 = 0xFF;
+    p1->unk83 = 0xFF;
+    p1->unk84 = 0;
+    p1->unk88 = 0;
+    memset(&p1->unk4, 0, 8);
+    p1->unkC = 0;
+    p1->unkD = 1;
+    p1->unkE = 2;
+    p1->unkF = 3;
+    p1->unk10 = 0;
+    p1->unk11 = 1;
+    p1->unk12 = 2;
+    p1->unk13 = 3;
+    p1->unk14 = 0;
+    p1->unk15 = 1;
+    p1->unk16 = 2;
+    p1->unk17 = 3;
+    memset(&p1->unk18, 0, 0x14);
+    memset(&p1->unk2C, 0, 0x14);
+    memset(&p1->unk40, 0, 0x10);
+    return p1;
+}
 
 
 
