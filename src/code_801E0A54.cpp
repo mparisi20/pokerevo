@@ -267,6 +267,22 @@ void func_801E10BC(void)
     
 }
 
+// TODO: move
+typedef struct
+{
+    float x;
+    float y;
+} Vec2;
+
+// NOTE: this is a guess by symmetry with other functions
+typedef struct
+{
+    u8 x;
+    u8 y;
+    u8 z;
+    u8 a;
+} Vec4U8;
+
 
 // TODO: methods of gUnkClass23?
 // TODO: template instantiations?
@@ -275,7 +291,10 @@ u8 func_80222B80(gUnkClass23* p1, u8 p2, float p3);
 s8 func_80222994(gUnkClass23* p1, u8 p2, float p3);
 u16 func_80222F68(gUnkClass23* p1, u8 p2, float p3);
 s16 func_80222D6C(gUnkClass23* p1, u8 p2, float p3);
-Vec func_802223DC(gUnkClass23* p2, u32 p3, float p4);
+Vec func_802223DC(gUnkClass23* p1, u8 p2, float p3);
+Quaternion func_80222694(gUnkClass23* p1, u8 p2, float p3);
+Vec2 func_80221F8C(gUnkClass23* p1, u8 p2, float p3);
+Vec4U8 func_80223164(gUnkClass23* p1, u8 p2, float p3);
 
 
 void func_801E10C0(gUnkClass12* p1, float* p2, float p3)
@@ -301,15 +320,9 @@ void func_801E10C0(gUnkClass12* p1, float* p2, float p3)
     }
 }
 
-// TODO: move
-typedef struct
-{
-    float x;
-    float y;
-} Vec2;
-
 // TODO: determine type of p2: Vec2* or float[2]?
-void func_801E13B8(gUnkClass12* p1, Vec2* p2);
+// move
+void func_801E13B8(gUnkClass12* p1, Vec2* p2, float p3);
 
 
 void func_801E1278(gUnkClass12* p1, Vec* p2, float p3)
@@ -332,17 +345,17 @@ void func_801E1278(gUnkClass12* p1, Vec* p2, float p3)
             func_801E10C0(p1, &p2->z, p3);
             break;
         case 4:
-            func_801E13B8(p1, &sp18);
+            func_801E13B8(p1, &sp18, p3);
             p2->x = sp18.x;
             p2->y = sp18.y;
             break;
         case 5:
-            func_801E13B8(p1, &sp10);
+            func_801E13B8(p1, &sp10, p3);
             p2->x = sp10.x;
             p2->z = sp10.y;
             break;
         case 6:
-            func_801E13B8(p1, &sp8);
+            func_801E13B8(p1, &sp8, p3);
             p2->y = sp8.x;
             p2->z = sp8.y;
             break;
@@ -351,9 +364,59 @@ void func_801E1278(gUnkClass12* p1, Vec* p2, float p3)
     }
 }
 
+void func_801E1360(gUnkClass12* p1, Quaternion* p2, float p3)
+{
+    *p2 = func_80222694(p1->unk8, 0, p3);
+}
 
+void func_801E13B8(gUnkClass12* p1, Vec2* p2, float p3)
+{
+    switch (p1->unk2) {
+        case 0:
+            *p2 = func_80221F8C(p1->unk8, 0, p3);
+            break;
+        case 1:
+            func_801E10C0(p1, &p2->x, p3);
+            break;
+        case 2:
+            func_801E10C0(p1, &p2->y, p3);
+            break;
+        default:
+            break;
+    }
+}
 
+void func_801E1504(gUnkClass12* p1, u8* p2, float p3);
 
+void func_801E1440(gUnkClass12* p1, Vec4U8* p2, float p3)
+{
+    switch (p1->unk2) {
+        case 0:
+            *p2 = func_80223164(p1->unk8, 0, p3);
+            break;
+        case 1:
+            func_801E1504(p1, &p2->x, p3);
+            break;
+        case 2:
+            func_801E1504(p1, &p2->y, p3);
+            break;
+        case 3:
+            func_801E1504(p1, &p2->z, p3);
+            break;
+        case 4:
+            func_801E1504(p1, &p2->a, p3);
+            break;
+        default:
+            break;
+    }
+}
+
+void func_801E1504(gUnkClass12* p1, u8* p2, float p3)
+{
+    *p2 = func_80222B80(p1->unk8, p1->unk7, p3);
+}
+
+// void func_801E1540() { }
 
 
 
