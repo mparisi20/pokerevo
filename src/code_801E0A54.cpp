@@ -1,5 +1,5 @@
 #include "ctorStruct.h"
-
+#include <SDK/mtx.h>
 
 // TODO: class member functions
 
@@ -28,11 +28,12 @@ struct gUnkClass12
 {
     u8 unk0;
     u8 unk1;
+    u8 unk2;
     
-    u8 unk2[0x4]; //pad
+    u8 unk3[0x3]; //pad
     
     u8 unk6;
-    u8 unk7;
+    u8 unk7; // scaling factor? related to quantization?
     gUnkClass23* unk8;
     void (*unkC)(void*, void*, u32, float);
     
@@ -267,13 +268,15 @@ void func_801E10BC(void)
 }
 
 
-// TODO: method of gUnkClass23?
+// TODO: methods of gUnkClass23?
 // TODO: template instantiations?
 float func_80221B2C(gUnkClass23* p1, u8 p2, float p3);
 u8 func_80222B80(gUnkClass23* p1, u8 p2, float p3);
 s8 func_80222994(gUnkClass23* p1, u8 p2, float p3);
 u16 func_80222F68(gUnkClass23* p1, u8 p2, float p3);
 s16 func_80222D6C(gUnkClass23* p1, u8 p2, float p3);
+Vec func_802223DC(gUnkClass23* p2, u32 p3, float p4);
+
 
 void func_801E10C0(gUnkClass12* p1, float* p2, float p3)
 {
@@ -298,7 +301,55 @@ void func_801E10C0(gUnkClass12* p1, float* p2, float p3)
     }
 }
 
+// TODO: move
+typedef struct
+{
+    float x;
+    float y;
+} Vec2;
 
+// TODO: determine type of p2: Vec2* or float[2]?
+void func_801E13B8(gUnkClass12* p1, Vec2* p2);
+
+
+void func_801E1278(gUnkClass12* p1, Vec* p2, float p3)
+{
+    Vec2 sp18;
+    Vec2 sp10;
+    Vec2 sp8;
+    
+    switch (p1->unk2) {
+        case 0:
+            *p2 = func_802223DC(p1->unk8, 0, p3);
+            break;
+        case 1:
+            func_801E10C0(p1, &p2->x, p3);
+            break;
+        case 2:
+            func_801E10C0(p1, &p2->y, p3);
+            break;
+        case 3:
+            func_801E10C0(p1, &p2->z, p3);
+            break;
+        case 4:
+            func_801E13B8(p1, &sp18);
+            p2->x = sp18.x;
+            p2->y = sp18.y;
+            break;
+        case 5:
+            func_801E13B8(p1, &sp10);
+            p2->x = sp10.x;
+            p2->z = sp10.y;
+            break;
+        case 6:
+            func_801E13B8(p1, &sp8);
+            p2->y = sp8.x;
+            p2->z = sp8.y;
+            break;
+        default:
+            break;
+    }
+}
 
 
 
