@@ -232,7 +232,9 @@ SPLIT_O_FILES := 						                          \
 	$(BUILD_DIR)/src/GScamera.o                                   \
 	$(BUILD_DIR)/asm/GSvolume.o                                   \
 	$(BUILD_DIR)/asm/GSvolume_ctors.o                                   \
+	$(BUILD_DIR)/asm/GSvolume_data.o                                   \
 	$(BUILD_DIR)/asm/GSvolume_sbss.o                                   \
+	$(BUILD_DIR)/asm/GSvolume_sdata2.o                                   \
 	$(BUILD_DIR)/src/code_801E07E8.o                                   \
 	$(BUILD_DIR)/src/gUnkClass20.o                                   \
 	$(BUILD_DIR)/src/code_801E0A54.o                                   \
