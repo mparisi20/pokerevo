@@ -526,9 +526,19 @@ void func_801E1740(gUnkClass26*)
     
 }
 
-struct gUnkClass27
+// NOTE: hypothetical class
+struct unkClass
 {
     u32 unk0;
+    u32 unk4[4];
+};
+
+
+// TODO: condense?
+struct gUnkClass27
+{
+    u32 unk0; // ptr?
+    
     u8 unk4[8];
     u8 unkC;
     u8 unkD;
@@ -543,24 +553,15 @@ struct gUnkClass27
     u8 unk16;
     u8 unk17;
     
-    u32 unk18;
-    u32 unk1C;
-    u32 unk20;
-    u32 unk24;
-    u32 unk28;
+    u32 unk18[5];
+    u32 unk2C[5];
+
+    // NOTE: assuming type of array members
     
-    u32 unk2C;
-    u32 unk30;
-    u32 unk34;
-    u32 unk38;
-    u32 unk3C;
-    
-    u32 unk40;
-    u32 unk44;
-    u32 unk48;
-    u32 unk4C;
+    gUnkClass26* unk40[4];
     
     u32 unk50;
+
     u8 unk54;
     u8 pad55[3];
     u8 unk58;
@@ -601,7 +602,7 @@ struct gUnkClass27
     u8 unk81;
     u8 unk82;
     u8 unk83;
-    u32 unk84;
+    gUnkClass25* unk84;
     u32 unk88;
 };
 
@@ -609,20 +610,24 @@ struct gUnkClass27
 gUnkClass27* func_801E1744(gUnkClass27* p1)
 {
     p1->unk0 = 0;
-    p1->unk18 = 0;
-    p1->unk1C = 0;
-    p1->unk20 = 0;
-    p1->unk24 = 0;
-    p1->unk28 = 0;
-    p1->unk2C = 0;
-    p1->unk30 = 0;
-    p1->unk34 = 0;
-    p1->unk38 = 0;
-    p1->unk3C = 0;
-    p1->unk40 = 0;
-    p1->unk44 = 0;
-    p1->unk48 = 0;
-    p1->unk4C = 0;
+    
+    p1->unk18[0] = 0;
+    p1->unk18[1] = 0;
+    p1->unk18[2] = 0;
+    p1->unk18[3] = 0;
+    p1->unk18[4] = 0;
+    
+    p1->unk2C[0] = 0;
+    p1->unk2C[1] = 0;
+    p1->unk2C[2] = 0;
+    p1->unk2C[3] = 0;
+    p1->unk2C[4] = 0;
+    
+    p1->unk40[0] = 0;
+    p1->unk40[1] = 0;
+    p1->unk40[2] = 0;
+    p1->unk40[3] = 0;
+
     p1->unk50 = 0;
     p1->unk54 = 0;
     p1->unk58 = 0;
@@ -678,12 +683,64 @@ gUnkClass27* func_801E1744(gUnkClass27* p1)
     p1->unk15 = 1;
     p1->unk16 = 2;
     p1->unk17 = 3;
-    memset(&p1->unk18, 0, 0x14);
-    memset(&p1->unk2C, 0, 0x14);
+    memset(p1->unk18, 0, 0x14);
+    memset(p1->unk2C, 0, 0x14);
     memset(&p1->unk40, 0, 0x10);
     return p1;
 }
 
+// TODO: last 4 elements don't match
+static inline void inline_func1(u32 p[5], u32 p3)
+{
+    for (u32 i = 0; i < 5; i++)
+        if (p3 && p[i] && p[i] < 0x80000000)
+            p[i] += p3;
+}
+
+
+// TODO: NONMATCHING
+// private?
+void func_801E18F8(gUnkClass27* p1, ctorStruct* p2, u32 p3)
+{
+    if ((p2->unk0 << 24 | p2->unk2 << 8 | p2->unk4) < 0x01000300)
+        p1->unk54 = 0;
+    if ((p2->unk0 << 24 | p2->unk2 << 8 | p2->unk4) < 0x01000400)
+        p1->unk50 = 0;
+    
+    if (p3 && p1->unk0 && p1->unk0 < 0x80000000)
+        p1->unk0 += p3;
+    if (p3 && p1->unk50 && p1->unk50 < 0x80000000)
+        p1->unk50 += p3;
+    
+    // inline this set of 5
+    inline_func1(p1->unk18, p3);
+    inline_func1(p1->unk2C, p3);
+    
+    u32 i; // r8
+    gUnkClass26** r9;
+    
+    // TODO: regswap and ordering issue
+    for (r9 = p1->unk40, i = 0; i < 4; i++) {
+        if (p3 && r9[i] && (u32)r9[i] < 0x80000000) {
+            u32 temp = (u32)r9[i];
+            r9[i] = (gUnkClass26*)(temp + p3);
+        }
+        if (i == 0 && r9[i] && !p1->unk50) {
+            switch (r9[i]->unk0) { // u8
+                case 0: case 2:
+                    // TODO: understand this line. u8 array index into p1 member?
+                    p1->unk50 = (&p1->unk0 + r9[i]->unk4)[6];
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    if (p3 && p1->unk84 && (u32)p1->unk84 < 0x80000000)
+        p1->unk84 = (gUnkClass25*)((u32)p1->unk84 + p3);
+    if (p1->unk84)
+        func_801E1540(p1->unk84, p2, p3);
+}
 
 
 
