@@ -717,19 +717,17 @@ void func_801E18F8(gUnkClass27* p1, ctorStruct* p2, u32 p3)
     inline_func1(p1->unk2C, p3);
     
     u32 i; // r8
-    gUnkClass26** r9;
-    
-    // TODO: regswap and ordering issue
-    for (r9 = p1->unk40, i = 0; i < 4; i++) {
-        if (p3 && r9[i] && (u32)r9[i] < 0x80000000) {
-            u32 temp = (u32)r9[i];
-            r9[i] = (gUnkClass26*)(temp + p3);
+    gUnkClass26** r9;    
+    for (r9 = p1->unk40, i = 0; i < 4; i++, r9++) {
+        if (p3 && *r9 && (u32)*r9 < 0x80000000) {
+            u32 temp = (u32)*r9;
+            *r9 = (gUnkClass26*)(temp + p3);
         }
-        if (i == 0 && r9[i] && !p1->unk50) {
-            switch (r9[i]->unk0) { // u8
+        if (i == 0 && *r9 && !p1->unk50) {
+            switch ((*r9)->unk0) { // u8
                 case 0: case 2:
                     // TODO: understand this line. u8 array index into p1 member?
-                    p1->unk50 = (&p1->unk0 + r9[i]->unk4)[6];
+                    p1->unk50 = (&p1->unk0 + (*r9)->unk4)[6];
                     break;
                 default:
                     break;
