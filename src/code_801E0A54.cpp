@@ -740,6 +740,160 @@ void func_801E18F8(gUnkClass27* p1, ctorStruct* p2, u32 p3)
         func_801E1540(p1->unk84, p2, p3);
 }
 
+// private?
+void func_801E1C78(gUnkClass27* p1)
+{
+    if (p1->unk84)
+        func_801E1614(p1->unk84);
+}
+
+struct gUnkClass29
+{
+    Vec unk0;
+    Vec unkC;
+    Vec unk18;
+    union { 
+        Vec v; 
+        struct { u32 x, y, z; } w;
+    } unk24;
+    
+};
+
+// size == 0x30
+struct gUnkClass28
+{
+    u32 unk0;
+    u32 unk4;
+    u16 unk8;
+    u16 unkA;
+    u32 unkC;
+    u32 unk10;
+    u32 unk14;
+    gUnkClass29* unk18;
+    float unk1C;
+    gUnkClass25* unk20;
+    gUnkClass28* unk24; // linked list
+    gUnkClass28* unk28; // linked list
+    u32 unk2C;
+};
+
+// gUnkClass28 constructor
+void func_801E1C8C(gUnkClass28* p1)
+{
+    p1->unk0 = 0;
+    p1->unk4 = 0;
+    p1->unk8 = 0;
+    p1->unkA = 0x18;
+    p1->unkC = 0;
+    p1->unk10 = 0;
+    p1->unk14 = 0;
+    p1->unk18 = 0;
+    p1->unk1C = 0.0f;
+    p1->unk20 = 0;
+    p1->unk24 = 0;
+    p1->unk28 = 0;
+    p1->unk2C = 0;
+}
+
+// TODO: template?
+void func_801E2A90(gUnkClass28* p1, ctorStruct* p2, u32 p3);
+void func_801E2878(gUnkClass28* p1, ctorStruct* p2, u32 p3);
+void func_801E2AE8(gUnkClass28* p1, ctorStruct* p2, u32 p3);
+void func_801E2A60(gUnkClass28* p1, ctorStruct* p2, u32 p3);
+void func_801E2D88(gUnkClass28* p1, ctorStruct* p2, u32 p3);
+void func_801E2B40(gUnkClass28* p1, ctorStruct* p2, u32 p3);
+
+// NOTE: recursive
+// private?
+void func_801E1CD0(gUnkClass28* p1, ctorStruct* p2, u32 p3)
+{
+    Vec sp8;
+    Vec sp14;
+    Vec sp20;
+    Vec sp2C;
+    
+    switch (p1->unk0) {
+        case 2:
+            func_801E2A90(p1, p2, p3);
+            break;
+        case 3:
+            func_801E2878(p1, p2, p3);
+            break;
+        case 4:
+            func_801E2AE8(p1, p2, p3);
+            break;
+        case 5:
+            func_801E2A60(p1, p2, p3);
+            break;
+        case 7:
+            func_801E2D88(p1, p2, p3);
+            break;
+        case 6:
+            func_801E2B40(p1, p2, p3);
+            break;
+        default:
+            break;
+    }
+    
+    // TODO: condense somehow. inline?
+    if (p3 && p1->unk4 && p1->unk4 < 0x80000000)
+        p1->unk4 += p3;
+    if (p3 && p1->unkC && p1->unkC < 0x80000000)
+        p1->unkC += p3;
+    if (p3 && p1->unk10 && p1->unk10 < 0x80000000)
+        p1->unk10 += p3;
+    if (p3 && p1->unk14 && p1->unk14 < 0x80000000)
+        p1->unk14 += p3;
+    if (p3 && p1->unk18 && (u32)p1->unk18 < 0x80000000)
+        p1->unk18 = (gUnkClass29*)((u32)p1->unk18 + p3);
+    if (p3 && p1->unk20 && (u32)p1->unk20 < 0x80000000)
+        p1->unk20 = (gUnkClass25*)((u32)p1->unk20 + p3);
+    if (p3 && p1->unk28 && (u32)p1->unk28 < 0x80000000)
+        p1->unk28 = (gUnkClass28*)((u32)p1->unk28 + p3);
+    if (p3 && p1->unk24 && (u32)p1->unk24 < 0x80000000)
+        p1->unk24 = (gUnkClass28*)((u32)p1->unk24 + p3);
+    if (p3 && p1->unk2C && p1->unk2C < 0x80000000)
+        p1->unk2C += p3;
+    
+    gUnkClass29* r31 = p1->unk18;
+    if (r31 && 
+        ((p2->unk0 << 24 | p2->unk2 << 8 | p2->unk4) < 0x01000300) &&
+        (r31->unk24.w.x != 0xFEFEFEFE || r31->unk24.w.y != 0xFEFEFEFE || r31->unk24.w.z != 0xFEFEFEFE))
+    {
+        
+        sp20 = r31->unk0;
+        
+        sp8.x = -r31->unk0.x;
+        sp8.y = -r31->unk0.y;
+        sp8.z = -r31->unk0.z;
+        
+        sp2C = sp8;
+        
+        VECAdd(&sp20, &r31->unkC, &sp20);
+        VECSubtract(&sp20, &r31->unk18, &sp20);
+        sp14 = r31->unk18;
+        VECAdd(&sp14, &r31->unk24.v, &sp14);
+        p1->unk18->unk0 = sp2C;
+        p1->unk18->unkC = sp20;
+        p1->unk18->unk18 = sp14;
+        
+        r31->unk24.w.x = 0xFEFEFEFE;
+        r31->unk24.w.y = 0xFEFEFEFE;
+        r31->unk24.w.z = 0xFEFEFEFE;
+        
+        
+        
+        
+    }
+    
+    if (p1->unk20)
+        func_801E1540(p1->unk20, p2, p3);
+    if (p1->unk24)
+        func_801E1CD0(p1->unk24, p2, p3);
+    if (p1->unk28)
+        func_801E1CD0(p1->unk28, p2, p3);
+}
+
 
 
 } //extern "C"
