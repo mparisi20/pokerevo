@@ -43,6 +43,7 @@ void PSVECNormalize(const Vec* src, Vec* unit);
 void PSVECSubtract(const Vec* a, const Vec* b, Vec* a_b);
 float PSVECMag(const Vec* v);
 void PSVECScale(const Vec* src, Vec* dst, float scale);
+float PSVECDotProduct(const Vec* a, const Vec* b);
 
 #define MTXTranspose PSMTXTranspose
 #define MTXCopy PSMTXCopy
@@ -60,6 +61,7 @@ void PSVECScale(const Vec* src, Vec* dst, float scale);
 #define VECNormalize PSVECNormalize
 #define VECMag PSVECMag
 #define VECScale PSVECScale
+#define VECDotProduct PSVECDotProduct
 #define MTXIdentity PSMTXIdentity
 #define MTXScale PSMTXScale
 #define MTXCopy PSMTXCopy

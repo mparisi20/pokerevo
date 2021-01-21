@@ -138,7 +138,6 @@ public:
     virtual void func1(float p1); // 801DFD90
 };
 
-
 static ctorStruct gUnk8063F360(1, 4, 0);
 
 extern "C" {
@@ -303,8 +302,21 @@ void func_8021CAA0(const Mtx p1, const gUnkClass14* p2, gUnkClass14* p3, u16 cou
 void func_8021CC54(Mtx, Mtx, u16*, gUnkClass14*, gUnkClass14*, u16);
 
 // NONMATCHING: lots of regswaps
+#if 0
+r25 -> r28
+r29 -> r31
+r28 -> r30
+r26 -> r27
+r30 -> r29
+r27 -> r26
+r31 -> r26
+r5 -> r4
+r4 -> r5
+#endif
+
 // private
-#ifdef NONMATCHING
+#define NONMATCHING_1
+#ifdef NONMATCHING_1
 void GSvolume::func_801DF528()
 {
     Vec sp14;
@@ -871,7 +883,14 @@ void GSvolume::func_801DFFFC()
 // NONMATCHING: r3/r0 regswap at the beginning of each do loop, and instruction misordering only
 // at the beginning of the first loop
 // private
-#ifdef NONMATCHING
+// #define NONMATCHING_2
+
+//#pragma regswap 801E0144 801E0164 r0 r3 801DF040
+//#pragma regswap 801E0234 801E0254 r0 r3 801DF040
+//#pragma regswap 801E031C 801E033C r0 r3 801DF040
+
+
+#ifdef NONMATCHING_2
 BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2)
 {
     Vec sp5C;
@@ -1293,9 +1312,7 @@ BOOL GSvolume::func_801E0404(const Vec* p1, const Vec* p2, Vec* p3, Vec* p4, flo
     for (u16 r28 = 0; r28 < r29; r28++, r30++) {
         gUnkClass14* r20 = &unk13C[r30->unk4[0]];
         sp68 = unk140[r30->unk0];
-        // TODO: How can a Vec* be cast to a Quaternion* if they have 
-        // different sizes?
-        float f30 = QUATDotProduct((Quaternion*)&sp74, (Quaternion*)&sp68);
+        float f30 = VECDotProduct(&sp74, &sp68);
         if (f30 >= 0.0f) {
             if (!r30->unk2)
                 continue;
@@ -1305,7 +1322,7 @@ BOOL GSvolume::func_801E0404(const Vec* p1, const Vec* p2, Vec* p3, Vec* p4, flo
             sp68.z = -sp68.z;
         }
         VECSubtract(r20, &sp8C, &sp50);
-        float f1 = QUATDotProduct((Quaternion*)&sp50, (Quaternion*)&sp68);
+        float f1 = VECDotProduct(&sp50, &sp68);
         if (f1 > 0.0f || f1 <= f30)
             continue;
         f30 = f1 / f30;
