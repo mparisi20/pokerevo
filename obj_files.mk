@@ -156,7 +156,8 @@ SPLIT_O_FILES := 						                          \
 	$(BUILD_DIR)/asm/MSL_C/MSL_Common/qsort.o                            \
 	$(BUILD_DIR)/asm/MSL_C/MSL_Common/rand.o                             \
 	$(BUILD_DIR)/asm/MSL_C/MSL_Common/scanf.o                            \
-	$(BUILD_DIR)/asm/MSL_C/MSL_Common/string.o                           \
+	$(BUILD_DIR)/src/MSL_C/MSL_Common/string.o                           \
+	$(BUILD_DIR)/asm/MSL_C/MSL_Common/string_asm.o                           \
 	$(BUILD_DIR)/asm/MSL_C/MSL_Common/strtold.o                          \
 	$(BUILD_DIR)/asm/MSL_C/MSL_Common/strtoul.o                          \
 	$(BUILD_DIR)/asm/MSL_C/MSL_Common/wstring.o                          \
