@@ -48,8 +48,8 @@ namespace
     {
         u16 unk0; // index into unk140 of GSvolume
         u8 unk2; // used in GSvolume::func_801E0404
-        u8 unk3; // loop counter in GSvolume::func_801E0058
-        u16* unk4; // points into an array of indices into unk13C of GSvolume
+        u8 count; // loop counter in GSvolume::func_801E0058
+        u16* indexArr; // points into an array of indices into unk13C of GSvolume
     };
 
     struct unkClass2
@@ -315,7 +315,6 @@ r4 -> r5
 #endif
 
 // private
-#define NONMATCHING_1
 #ifdef NONMATCHING_1
 void GSvolume::func_801DF528()
 {
@@ -683,7 +682,7 @@ void GSvolume::func_801DF85C()
         u16 r30 = r4->unk34;
         unkClass8* r29 = r4->unk40;
         for (u16 r28 = 0; r28 < r30; r28++, r29++) {
-            u16* r7 = r29->unk4;
+            u16* r7 = r29->indexArr;
             gUnkClass14* r27 = &unk140[r29->unk0];
             gUnkClass14* r26 = &unk13C[r7[0]];
             gUnkClass14* r25 = &unk13C[r7[2]];
@@ -883,15 +882,16 @@ void GSvolume::func_801DFFFC()
 // NONMATCHING: r3/r0 regswap at the beginning of each do loop, and instruction misordering only
 // at the beginning of the first loop
 // private
-// #define NONMATCHING_2
+#define NONMATCHING_2
 
+//#pragma iswap 801E015C 801E0160 801DF040
 //#pragma regswap 801E0144 801E0164 r0 r3 801DF040
 //#pragma regswap 801E0234 801E0254 r0 r3 801DF040
 //#pragma regswap 801E031C 801E033C r0 r3 801DF040
 
 
 #ifdef NONMATCHING_2
-BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2)
+BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2) // const
 {
     Vec sp5C;
     Vec sp50;
@@ -902,11 +902,13 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2)
     Vec sp14;
     Vec sp8;
     
-    u16* r31;
-    u32 r30;
+    u16* start_p; // r31
+    u16* end_p; // r4
+    u32 count; // r30
+    BOOL cmp_end; // r5
     BOOL r29;
     
-    gUnkClass14* r6 = &unk140[p1->unk0]; // u16 index
+    const gUnkClass14* r6 = &unk140[p1->unk0]; // u16 index
     r29 = FALSE;
     
     // Determine component with the largest absolute value
@@ -929,72 +931,71 @@ BOOL GSvolume::func_801E0058(unkClass8* p1, Vec* p2)
         st = Zmax;
     }
     
-    r30 = p1->unk3; // loop counter... must be > 0
-    r31 = p1->unk4; // start ptr
+    count = p1->count; // loop counter must be > 0
+    start_p = p1->indexArr; 
+    end_p = p1->indexArr + (count-1);
+    const Vec* end = &unk13C[*end_p]; // r3
     
-    u16* r4 = &r31[r30-1]; // end ptr
-    gUnkClass14* r3 = &unk13C[*r4];
-    BOOL r5;
     if (st == Ymax) {
-        r5 = (p2->x >= r3->x);
+        cmp_end = (p2->x >= end->x);
         do {
-            BOOL r26, r0;
-            gUnkClass14* r25 = &unk13C[*r31];
-            r3 = &unk13C[*r4];
-            r26 = (p2->x >= r25->x);
-            if (r5 != r26) {
-                VECSubtract(r3, r25, &sp44);
+            BOOL cmp_start, r0; // r26
+            const Vec* start = &unk13C[*start_p]; // r25
+            end = &unk13C[*end_p];
+            cmp_start = (p2->x >= start->x);
+            if (cmp_end != cmp_start) {
+                VECSubtract(end, start, &sp44);
                 sp5C = sp44;
-                VECSubtract(r25, p2, &sp38);
+                VECSubtract(start, p2, &sp38);
                 sp50 = sp38;
                 r0 = (sp50.x * sp5C.z >= sp50.z * sp5C.x);
-                if (r26 == r0)
+                if (cmp_start == r0)
                     r29 = !r29; // toggle
             }
-            r4 = r31;
-            r5 = r26;
-            r31++;
-        } while (--r30);
+            end_p = start_p;
+            cmp_end = cmp_start;
+            start_p++;
+        } while (--count);
     } else if (st == Zmax) {
-        r5 = (p2->y >= r3->y);
+        cmp_end = (p2->y >= end->y);
         do {
-            BOOL r26, r0;
-            gUnkClass14* r25 = &unk13C[*r31];
-            r3 = &unk13C[*r4]; 
-            r26 = (p2->y >= r25->y);
-            if (r5 != r26) {
-                VECSubtract(r3, r25, &sp2C);
+            BOOL cmp_start, r0;
+            const Vec* start = &unk13C[*start_p];
+            end = &unk13C[*end_p]; 
+            cmp_start = (p2->y >= start->y);
+            if (cmp_end != cmp_start) {
+                VECSubtract(end, start, &sp2C);
                 sp5C = sp2C;
-                VECSubtract(r25, p2, &sp20);
+                VECSubtract(start, p2, &sp20);
                 sp50 = sp20;
                 r0 = (sp50.y * sp5C.x >= sp50.x * sp5C.y);
-                if (r26 == r0)
+                if (cmp_start == r0)
                     r29 = !r29; // toggle
             }
-            r4 = r31;
-            r5 = r26;
-            r31++;
-        } while (--r30);
+            end_p = start_p;
+            cmp_end = cmp_start;
+            start_p++;
+        } while (--count);
     } else { // st == Xmax
-        r5 = (p2->z >= r3->z);
+        cmp_end = (p2->z >= end->z);
         do {
-            BOOL r26, r0;
-            gUnkClass14* r25 = &unk13C[*r31];
-            r3 = &unk13C[*r4]; 
-            r26 = (p2->z >= r25->z);
-            if (r5 != r26) {
-                VECSubtract(r3, r25, &sp14);
+            BOOL cmp_start, r0;
+            const Vec* start = &unk13C[*start_p];
+            end = &unk13C[*end_p]; 
+            cmp_start = (p2->z >= start->z);
+            if (cmp_end != cmp_start) {
+                VECSubtract(end, start, &sp14);
                 sp5C = sp14;
-                VECSubtract(r25, p2, &sp8);
+                VECSubtract(start, p2, &sp8);
                 sp50 = sp8;
                 r0 = (sp50.z * sp5C.y >= sp50.y * sp5C.z);
-                if (r26 == r0)
+                if (cmp_start == r0)
                     r29 = !r29; // toggle
             }
-            r4 = r31;
-            r5 = r26;
-            r31++;
-        } while (--r30);
+            end_p = start_p;
+            cmp_end = cmp_start;
+            start_p++;
+        } while (--count);
     }
     return r29;
 }
@@ -1310,7 +1311,7 @@ BOOL GSvolume::func_801E0404(const Vec* p1, const Vec* p2, Vec* p3, Vec* p4, flo
     unkClass8* r30 = unk144->unk40;
     u16 r29 = unk144->unk34; // count    
     for (u16 r28 = 0; r28 < r29; r28++, r30++) {
-        gUnkClass14* r20 = &unk13C[r30->unk4[0]];
+        gUnkClass14* r20 = &unk13C[r30->indexArr[0]];
         sp68 = unk140[r30->unk0];
         float f30 = VECDotProduct(&sp74, &sp68);
         if (f30 >= 0.0f) {
